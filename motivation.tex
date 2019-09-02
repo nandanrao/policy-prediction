@@ -1,0 +1,500 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
+\addbibresource{external-validity.bib}
+\addbibresource{econ-causal-history.bib}
+\addbibresource{causality.bib}
+
+\usepackage{amsmath, amsfonts, mathtools, csquotes, bm, centernot, bbm}
+
+\usepackage[default,light,bold]{sourceserifpro}
+\usepackage[T1]{fontenc}
+
+
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, automata}
+
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+\newcommand{\CI}{\mathrel{\perp\mspace{-10mu}\perp}}
+\newcommand{\nCI}{\centernot{\CI}}
+
+\begin{document}
+
+\subsection*{Introduction}
+
+Randomized control trials, or natural experiments that replicate them, have become the official gold standard of empirical work in economics and many related fields. This focus on identification via experimental or quasi-experimental methods has lead to the so-called ``identification police'' effect in many discussions of applied economics, where identification of a causal effect has become the primary qualification for a ``successful'' empirical study.
+
+In response to this trend, several prominent economists have raised an alarm bell to dampen the party of the ``randomistas,'' emphasizing that cleanly identified counterfactual analysis is not the end goal of econometrics and that external validity should be considered equally important (\cite{Shadish2002},\cite{Heckman2008}, \cite{Deaton2010}, \cite{Manski2013}, \cite{Deaton2018}). 
+
+One concern that this focus on counterfactual identification comes at the detriment of the other parts of the process of scientific induction needed to build knowledge that can be applied by policy makers. Heckman (2008) worries that ``this emphasis on randomization or its surrogates, like matching or instrumental variables, rules out a variety of alternative channels of identification of counterfactuals from population or sample data.'' Similarly, Deaton and Cartwright (2018) worry that ``the lay public, and sometimes researchers, put too much trust in RCTs over other methods of investigation.'' 
+
+Banjerjee and Snowberg (2016) echo the need for more formal systems for the external validity of experimental studies, saying ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
+
+Manskey (2013) argues that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice, it makes no sense to value one type of validity above the other. What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
+
+Applied research in economics, if it is meant to be ``applied'' to inform policy making, must therefore deal with external validity one way or another. Rigorous frameworks for external validity are missing from much applied research. Internal validity, identifying counterfactual effects, is not enough. 
+
+% The prediction problem, as Hurwicz defines it, takes place in the target context of a policy and any quantitative relationship discovered in another context must be invariant to exactly those changes defined by the translation between those two contexts if it is to inform decisions.
+
+Following up on these theoretical concerns, a small but growing literature has sprung up around empirically proving that results from prominent RCT studies do not extrapolate to new contexts (\cite{LantPritchett&JustinSandefur2016}, \cite{Gechter2015}, \cite{Allcott2015}, \cite{Bisbee2017}, \cite{Rosenzweig2019}). 
+
+The purpose of the present work is to build on those results by:
+
+\begin{enumerate}
+\item Building context to understand the role of applied research in economics through review of the history of econometrics and scientific inference.
+\item Reviewing the assumptions of the treatment effect literature to show that results from counterfactual analysis, including RCTs, cannot be expected to extrapolate in a social sciences setting.  
+\item Providing a framework for extrapolation, posed as a prediction problem with labeled data in a set of source domains and a specific target domain of interest in which no labeled data is available. 
+\end{enumerate}
+
+% First, however, the difference between internal validity and external validity is reviewed in the greater context of scientific inference and the history of econometric inference. 
+
+% The rise of RCTs as a ``gold standard'' in economics and policy literature, as well as the increasing popularity of the counterfactual approach, are... 
+
+
+\subsection*{Scientific Inference}
+
+Following from Aristotelian tradition of logic, inference is broken into two parts: reasoning from particulars to generals (induction) and reasoning from generals to particulars (deduction). Deduction is often recognized by Aristotle's syllogisms, such as:
+
+
+\begin{displayquote}
+All men are mortal \\
+Socrates is a man  \\
+Therefore, Socrates is mortal
+\end{displayquote}
+
+The traditional process of knowledge creation via scientific research is that of induction, moving from particulars to generals. The process of applying this knowledge is that of deduction, applying general laws to particular cases. Together, they make up the process generally referred to as scientific inference.
+
+David Hume, exploring this process, introduced the ``Problem of Induction,'' stating that:
+%
+\begin{displayquote}
+``As to past Experience, it can be allowed to give direct and certain information of those precise objects only, and that precise period of time, which fell under its cognizance: but why this experience should be extended to future times, and to other objects, which for aught we know, may be only in appearance similar, this is the main question on which I would insist'' (Hume ).  
+\end{displayquote}
+
+There are two distinct problems Hume raises, that of generalizing from one object to another and that of generalizing from the past to the future. He goes on to explain that this extrapolation is only valid under a strong assumption as to the ``uniformity of nature.'' One must assume nature is uniform in such a way as to enable extrapolation from one object to another or from the past to the future. 
+
+Classical statistical inference is a tool in the process of induction that seeks to address, partially, the Hume's problem of extending experience with one object to that of similar objects. In particular, the ``similar objects'' to which conclusions are extended are not just similar in appearance, but rather have a distinct relationship to the experienced objects: they are the population from which the experienced objects represent a sample. Thus, one can be said to be in the process of inductive reasoning about the population from which the sample was drawn.
+
+R.A. Fisher framed his statistical techniques in terms of ``inductive inference.'' In the introduction to The Design of Experiments (1935), he explicitly frames his canonical book and its techniques in the terms of logicians such as Hume, arguing for the possibility of induction via statistical methods: 
+%
+\begin{displayquote}
+``it is possible to draw valid inferences from the results of experimentation... as a statistician would say, from a sample to the population from which the sample was drawn, or, as a logician might put it, from the particular to the general.'' (Fisher   )  
+\end{displayquote}
+
+Classical statistical inference allows us to make an assumption (there exists a ``population'' of items from which I can sample), and with that assumption to reason, not individually but probabilistically, from particular to general. It does nothing to solve the problem of time: that the future should be like the past is in no way addressed. Similarly, it does not provide us with tools to make inductions to a population that was not sampled, or to a category that is more general than the population itself. It allows us to reason about what would have happened had we not measured a small sample, but rather the whole population.
+
+It should be noted that in Fisher's line of work (agriculture), neither of those shortcomings were problematic. He did not need to generalize from grains to banana trees, nor did he fear that the nature of the grains was such that their attitudes and behavior towards the sun might change over time. His population, the highest level of generalization he ever needed to reach, was ``seeds of grain crops'' and he was able to randomly sample from that population. 
+
+While Jerzy Neyman disagreed with the term ``inductive inference'' used by Fisher, his techniques had essentially the same goals. The Neyman-Rubin causal model (\cite{Holland1986}) that evolved from his thinking allows us to reason about counterfactuals: what would have happened, on average and in the past, had we treated our entire population rather than a randomized part of a randomized sample drawn from that population. The Neyman-Rubin causal model, however, provides no framework for generalizing from a specific population to a more general one or from the past to the future (\cite{Heckman2008}).
+
+\subsection*{Structure}
+
+Economists during the same period as Fisher took a different approach to conceptualizing and thinking about the inference they were doing. Ragnar Frisch, theorizing about macro-dynamic analysis, set out several key ideas relating to the structure of a system and the autonomy of a structure (\cite{Frisch1995}). For Frisch, the ``structure'' of a system was all the characteristics of the phenomena that could be quantitatively described. In his macrodynamic systems, the structure is defined by a set of functional (simultaneous) equations. He then poses the question: what would happen to the system due to an arbitrary change in a single variable? To do so could imply a different ``structure'' than the one which the equations describe, requiring a different set of equations altogether to describe the new system.
+
+\begin{displayquote}
+``But when we start speaking of the possibility of a structure different from what it actually is, we have introduced a fundamentally new idea. The big question will now be in what directions should we conceive of a possibility of changing the structure?\ldots To get a real answer we must introduce some fundamentally new information. We do this by investigating what features of our structure are in fact the most autonomous in the sense that they could be maintained unaltered while other features of the structure were changed\ldots So we are led to constructing a sort of super-structure, which helps us to pick out those particular equations in the main structure to which we can attribute a high degree of autonomy in the above sense. The higher this degree of autonomy, the more fundamental is the equation, the deeper is the insight which it gives us into the way in which the system functions, in short, the nearer it comes to being a real explanation. Such relations form the essence of 'theory'.''
+\end{displayquote}
+
+This concept, that of ``the essence of theory'' being the discovery of some relationship that is autonomous and invariant to a great degree of changes we can imagine performing to a system, is taken up by Trygve Haavelmo (1944), who writes that: 
+
+\begin{displayquote}
+``The principal task of economic theory is to establish such relations as might be expected to possess as high a degree of autonomy as possible.''  
+\end{displayquote}
+
+He then goes on to consider a distinction between the ``invariance'' of a relationship under hypothetical changes in structure versus the ``persistence'' of a relationship under observed changes in structure:
+
+\begin{displayquote}
+``\ldots if we always try to form such relations as are autonomous with respect to those changes that are in fact \textit{most likely to occur}, and if we succeed in doing so, then, of course, there will be a very close connection between actual persistence and theoretical degree of autonomy.''
+\end{displayquote}
+
+This implies a connection between autonomy and the \textit{type} of changes to which it is invariant \textit{with respect to}. This point is made even more explicitly by Leonid Hurwicz (1962). Similar to his predecessors, his model consists of a system of equations that constrain the state of the world, given a history of states. He calls this system of equations a ``behavior pattern.'' He states that: 
+
+\begin{displayquote}
+``A great deal of effort is devoted in econometrics and elsewhere to attempts at finding the behavior pattern of an observed configuration\ldots But do we really need the knowledge of the behavior pattern of the configuration?\ldots It will be approached here from the viewpoint of prediction\ldots That is, the word `need' in the above question will be understood as `need' for purposes of prediction.''
+\end{displayquote}
+
+% He then goes on to explain that the need is driven by the type of prediction one hopes to make. If it can be assumed that the behavior pattern does not change (i.e. the joint distribution of our variables of interest comes from the same distribution tomorrow as today), then we do not actually need to find the behavioral pattern, as we can predict the state of the world tomorrow based on an expectation of the past. 
+
+He then goes on to define what he calls a ``structural form'' as one which is identified and identical across all possible behavior changes that one \textit{needs} to predict within. He stresses that: 
+
+\begin{displayquote}
+``The most important point is that the concept of structure is relative to the domain of modifications anticipated.''  
+\end{displayquote}
+
+Thus, there is an inherent and irrevocable connection between what we consider a ``law'' and the degree of changes we require the law to persist across. The law is defined in relation to those changes. Folowing Hume, the performance of induction is always connected to a specific assumption about the uniformity of nature. Additionally, the exact way in which nature must be uniform, for a particular system under study, is defined by the predictions we need to make with the discovered relations in that system. 
+
+\subsection*{Validities}
+
+Critiques against the randomistas have focused on their preference for internal validity and tendency to completely ignore external validity. It is worth defining these terms. The most agreed upon definition seems to come from \cite{Shadish2002}, where they update their taxonomy of validities from \cite{Cook1979}:
+
+\begin{displayquote}
+\textbf{Statistical Conclusion Validity:} The validity of inferences about the correlation (covariation) between treatment and outcome.
+
+\textbf{Internal Validity:} The validity of inferences about whether observed covariation between A (the presumed treatment) and B (the presumed outcome) reflects a causal relationship from A to B as those variables were manipulated or measured.
+
+\textbf{Construct Validity:} The validity of inferences about the higher order constructs that represent sampling particulars.
+
+\textbf{External Validity:} The validity of inferences about whether the cause-effect relationship holds over variation in persons, settings, treatment variables, and measurement variables.  
+\end{displayquote}
+
+Many authors use the term external validity to refer to what Shadish, Cook, and Campbell separate into construct and external validity. As both are involved in generalization, and both are external to the particulars of the sample, I will follow that abuse of terminology and refer to all the challenges of both as ``external validity.''
+
+The connection between the RCT and internal validity (i.e., the identification of a causal relationship) comes straight from John Stuart Mill's (1843) ``method of difference'' for causal discovery:
+
+\begin{displayquote}
+  ``If an instance in which the phenomenon under investigation occurs, and an instance in which it does not occur, have every circumstance save one in common, that one occurring only in the former; the circumstance in which alone the two instances differ, is the effect, or cause, or a necessary part of the cause, of the phenomenon.''
+\end{displayquote}
+
+R.A. Fisher (1935) clearly had this in mind when he defended randomization, claiming that holding all other variables constant was not feasible, and thus, holding them to the same distribution, by making the assignment of treatment independent of those variables, was desirable (\cite{Rosenbaum2005}). It should be noted, however, that for the subjects of interest to Fisher, the difference between something being a ``cause'' or ``a necessary part of the cause'' was not especially important. What Fisher was essentially interested in was interventional prediction: what is the effect when one makes individual changes to the growing conditions of these plants. 
+
+Holland (1986) begins his landmark paper, before formulating the Rubin-Neyman causal model, by framing his goal:
+
+\begin{displayquote}
+``Others are concerned with deducing the causes of a given effect. Still others are interested in understanding the details of causal mechanisms. The emphasis here will be on measuring the effects of causes because this seems to be a place where statistics, which is concerned with measurement, has contributions to make.''
+\end{displayquote}
+
+The success of Fisher's framework of randomization and the Rubin-Neyman causal model comes down to this razor focus in purpose: it makes no claims to discover all the causes of a given effect, to discover the mechanism of the cause, or even to separate between a cause or a necessary part of a cause. It operationalizes Mill's method of differences, creating a pathway to internal validity that is achievable in the real world. 
+
+The success of Fisher's randomization in his field of agriculture, and the subsequent success of the Rubin-Neyman causal model in epidemiology, is in no way incidental. These are fields that deal with encapsulated biological units where agreed-upon scientific theory tells us that the relationships in these systems will be invariant to a wide degree of changes that happen in the world from one year to the next or from one country to the next.
+
+For example, it is implicitly assumed that the growth of corn will not be affected by its expectations of how it will be cut down and processed during the harvest. Corn grows according to the properties of the soil and the sun it receives. Its growth will be independent of its destination in corn flakes or arepas, conditional on those properties. Opioids will inhibit pain in humans, regardless of their political ideology, faith in their governmental institutions, or their love of Shark Tank. 
+
+These arguments are not made explicitly, but their validity is absolutely necessary to enable the application of their findings: they create laws defined in relation to the entire range of contextual changes that one might want for prediction- and decision-making and that allows the laws to be applied deductively in a wide array of useful situations. 
+
+While the validity of these arguments is taken for granted in contained biological processes, this is simply not the case in the social sciences. 
+
+We generally consider the decision-making of humans to be...
+
+Arguments for external validity must be made explicit, the internal validity of a study is rarely sufficient for scientific inference in the social sciences. 
+
+
+
+% While RCTs, the counterfactual model, and the internal validity they aim to ensure are not sufficient for the process of scientific inference, that does not in any way detract from them being useful and even necessary. \cite{Deaton2018} provide a strong overview of the many ways in which RCTs are valuable even without any claims of external validity. 
+
+% While they echo the concerns of \cite{Heckman2007}, that RCTs and, more generally, the counterfactual approach does \textit{not} easily lead to invariant (autonomous) relationships, they also stress that RCTs can be useful even if they do not generalize to other populations. ``Demanding ‘external validity’ is unhelpful because it expects too much of an RCT while undervaluing its potential contribution.'' 
+ 
+
+
+\subsection*{The Danger of Informal Inference}
+
+% Rather than completing the full process of induction, reasoning from particulars to the general, John Stuart Mill () defines a shortcut: drawing inference directly from particulars to particulars, thus combining induction and deduction into one step. 
+ 
+% He defends this by explaining that:
+%
+
+It might be argued that it is, and should be, up to the sound judgement and expert opinion of the policy maker to determine if a given counterfactual analysis should extrapolate to their context or not. Empirical studies only need to provide internal validity, according to this argument, as the extrapolation is done by experts who know their target domain. 
+
+This is inline with the understanding that the invariance of a law must be defined in relation to the prediction problem, as proposed by Hurwicz. However, there is a difference between using a formal statistical framework and using an informal framework of judgement. John Stuart Mill, in his -----, reflects on these difference and the dangers of inferring without formal frameworks. 
+
+He begins by denying that the only process of inference consists of separately applying induction (particulars to generals) and then deduction (general law to particular context):
+
+\begin{displayquote}
+  ``All inference is from particulars to particulars: General propositions are merely registers of such inferences already made, and short formulae for making more: The major premise of a syllogism, consequently, is a formula of this description: and the conclusion is not an inference drawn from the formula, but an inference drawn according to the formula: the real logical antecedent, or premise, being the particular facts from which the general proposition was collected by induction.''  (John Stuart Mill  )
+\end{displayquote}
+
+In other words, in the process of creating the general law, one has created a series of particular laws, and only once assured that all the particular laws are valid can one be assured of the more general law. He goes on to caution against the direct reasoning of particulars to particulars because it is informal and we are likely to bring our own biases into the process and make mistakes: 
+%
+\begin{displayquote}
+``In reasoning from a course of individual observations to some new and unobserved case, which we are but imperfectly acquainted with (or we should not be inquiring into it), and in which, since we are inquiring into it, we probably feel a peculiar interest; there is very little to prevent us from giving way to negligence, or to any bias which may affect our wishes or our imagination, and, under that influence, accepting insufficient evidence as sufficient.'' (John Stuart Mill )  
+\end{displayquote}
+
+John Stuart Mill argues that formal procedures, such as that implied by the framework of induction and deduction, allow individuals to avoid these biases. In his world, there was no formal procedure for reasoning from particulars to particulars, but there was for reasoning from particulars to general. As such, he recommends the latter as a way to avoid biases of ``wishes'' and ``imagination.''
+
+In an ideal world, the research community has discovered a set of general laws that are invariant to all contexts and the policy maker can apply them, via the process of deduction, to get the desired result in their circumstance. But what if that general law has not yet been discovered? Then the policy maker must look at individual studies (particulars) and attempt to infer a prediction for the result of a similar policy in their context. This is exactly the situation that John Stuart Mill has warned is fertile ground for bias and imagination. 
+
+% Thus, following both John Stuart Mill's claim that inference between particulars to particulars is not only possible but a necessary intermediate step in the induction process, while also following his warning that without formal procedures the process of inference from particulars to particulars is ripe for the influence of personal bias and imagination, I propose that a formal system for reasoning from individual studies in foreign contexts to a target policy in a local context is not only helpful but cannot be more data-intensive than that of extending the validity of studies to a more general context. By focusing on a ``target'' context, one restricts the support requirements of the input variables to a known quantity that is, likely, a subset of the entire possible domain of the variables. This necessarily eases the data requirements to model any nonlinear function that represents the quantitative relationship in question.
+
+\subsection*{Previous Approaches}
+
+The most obvious alternative to the treatment effect approach, which addresses the problem of external validity, is that of structural economics.
+
+% Heckman (2008) explains that RCTs solve internal validity, while the problem that ``economic policy analysts have to solve daily'' involves more, and not just the generalization of previous experiments but also the prediction of the effects of policies ``never historically experienced''. 
+
+Heckman (2008)...
+
+(TODO: some published criticism of the assumptions of structural models. Relate it to uniformity of nature and size of modifications -- very large!)
+
+Others have proposed methods for ``augmenting'' counterfactual anaylisis to take external validity into account. 
+
+\cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. 
+
+Banjerjee and Snowberg (2016) create a formal system of ``speculation'' to create ``falsifiable claims'' of research studies as an attempt to codify the process of generalization and external validity that can be attached to any empirical study from the counterfactual paradigm (\cite{Snowberg2016}). The falsifiable claims would presumably be used by other researchers to test the assumptions necessary for external validity of the original findings to hold true. 
+
+
+\subsection*{Invariant Conditionals}
+
+Robert Engle, building on the work of Frisch and Hurwicz regarding invariant/autonomous structures, creates a statistical definition of what he terms ``super exogoneity.'' A good review of this historical evolution of autonomy can be found in \cite{Aldrich1989}.
+
+Super exogoneity is defined by Engle as follows. Consider a model in which the ``structure'' (the functional form) of a relationship between outcome $y$ and variable $z$ is parameterized by ``structural'' parameters $\lambda_1, \lambda_2 \in \lambda$. If the joint density implied by the model can be factorized as follows: 
+%
+$$
+P(y, z, \lambda) = P(y | z, \lambda_1)P(z | \lambda_2)
+$$
+
+and the conditional, $P(y | z, \lambda_1)$ remains invariant to changes in the marginal $p(z)$ (presumably caused by changes in it's generating process, parameterized by $\lambda_2$), then $z$ is super exogenous. This definition allows super exogoneity to be refuted by data:  
+
+\begin{displayquote}
+``It is clear that any assertion concerning super exogeneity is refutable in the data for past changes in $D(z, | X_{t-1}, \lambda_2)$ by examining the behavior of the conditional model for invariance when the parameters of the exogenous process changed...However, super exogeneity for all changes in the distribution of z, must remain a conjecture until refuted, both because nothing precludes agents from simply changing their behavior at a certain instant and because only a limited range of interventions will have occurred in any given sample period.''  
+\end{displayquote}
+
+Writing a system in terms of super exogenous variables is akin to finding Frisch's ``super-structure.'' This is the part of the system that stays invariant to a set of allowable modifications, parameterized by $\lambda_2$. This is the part of the system that must be known in order to make policy predictions, when $\lambda_2$ includes the changes in the policy, whose total causal effect (in the sense of \cite{Pearl2000}) is transmitted to the output variable $y$ through $z$. The existence of such an invariant super-structure is a necessary prerequisite to successfully predict the effects of policy and therefore to successfully inform policy choice from empirical data.
+
+It should be clear that, even if such a super-structure exists, it is possible that $z$ is either fully or partially unobserved. How will that effect the invariance? Consider again the model with a slight modification (we drop $\lambda_1$ for ease of notation, as we are only interested in the conditions under which the conditional distribution is invariant and thus $\lambda_1$ is static):
+%
+$$
+P(y, z_1, z_2, \lambda) = P(y | z_1, z_2)P(z_1 | z_2, \lambda_2)p(z_2 | \lambda_3)
+$$
+
+Where we consider a latent variable, $z_2$, which is independent of the policy modification of interest, $\lambda_2$, and whose generating process is controlled by structural parameter $\lambda_3$. We can marginalize out $z_2$ by fixing $\lambda_3 = \ell$: 
+%
+$$
+P(y, z_1, z_2, \lambda_2, \lambda_3 = \ell_3) = P(y | z_1, \lambda_3 = \ell_3)P(z_1 | \lambda_2, \lambda_3 = \ell_3)
+$$
+
+Thus, our conditional is still invariant to modifications to $\lambda_2$, but it is fixed as regards the structural parameter $\lambda_3$ which determined the distribution of the latent variable $z_2$. If the latent variable, $z_2$, was also effected by the structural parameters $\lambda_2$, then one would have to fix that as well in order to get an invariant conditional: 
+%
+$$
+P(y | z_1, \lambda_2 = \ell_2, \lambda_3 = \ell_3)
+$$
+
+It is worth considering the implications of the existence of latent variables in the super-structure that are evident evTechniques for en in this simple exercise of probability algebra: 
+
+\begin{enumerate}
+\item If the latent variable is not independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) \neq P(z)$), then the relationship cannot be determined generally.
+\item If the latent variable is independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) = P(z)$, then marginalizing out the latent variable results in an invariant relationship. 
+\end{enumerate}
+
+This requirement is proved rigorously in \cite{Pearl2014}, where they refer to a relationship as ``transportable'' if it is invariant across a set of modifications. 
+
+Given that $z_2$ is latent, it might be difficult, in practice, to know whether or not it is independent of $\lambda_2$: one cannot directly obtain an empirical estimate of $P(z_2)$. What about going in the reverse direction: if one had empirical data across a set of modifications (different values of $\lambda_2$) and one discovered an empirical conditional distribution $P(y | z_1)$ that is invariant across those modifications, does that imply that $P(z_2 | \lambda_2) = P(z_2)$?
+
+This method of looking in the data for a conditional distribution that is invariant to ``structural'' changes that lead to differences in the marginal distribution of its ``inputs'' has formed the basis of much recent work in statistics and machine learning around causal discovery (\cite{peters2015}, ...). 
+
+% For our purposes, this provides us a statistical formulation that will allow us to recognize the desired property of invariance/autonomy across a specific set of modifications in empirical data. 
+
+
+
+\subsection*{Problem Formulation}
+
+We consider the utility of individual $i$ given as $ u(\pi, X_i)$, where $X_i$ is a set of covariates, potentially unique to the individual, and $\pi$ some policy under question. The utility function is considered common across all individuals, but arbitrarily parameterized by individual covariates $X_i$, thus this assumption is non-restrictive. 
+
+The social planner's problem consists of finding the ``best'' policy, where best can be defined in a number of different ways: greatest average utility, paretto optimal, least inequality, etc:
+%
+$$
+\pi^* = h(\bm{\pi}, X)
+$$
+
+Where $h(\cdot)$ represents a function that determines the best policy given a set of policies $\bm{\pi}$ and the population covariates $X$. We will make two assumptions to make this problem tractable for our framework: 
+
+\begin{enumerate}
+\item We replace the utility function, $u(\cdot)$, with a surrogate outcome $Y(\cdot)$ of interest to the social planner. The surrogate is considered linear separable into two parts: 
+%
+$$
+Y(\pi, X) = Y_1(\pi, Z) + Y_2(W)
+$$
+
+Where $Z \cup W = X$.
+
+\item In comparing two policies, a policy maker can pick one based solely on the individual differences in outcomes between the two policies: 
+%
+$$
+\pi^* = h(Y(\pi_1, Z_1) - Y(\pi_0, Z_1),...,Y(\pi_1, Z_N) - Y(\pi_0, Z_N))
+$$
+When $\bm{\pi} = \{\pi_0, \pi_1\}$.
+\end{enumerate}
+
+The first assumption is non-restrictive, as $W$ can be null. The second assumption is a restriction on the type of policy objectives the social planner can pursue, however many naturally desireable objectives can still be pursued in realistic scenarios\footnote{The decision maker can directly pursue the greatest average utility and objectives based on paretto optimality, but cannot directly pursue least inequality, as an example. In realistic scenarios, however, reduction of inequality can be pursued via the maximization of utility (likely replaced with income) for those who currently are in the lowest x\% and minimization of income for those who are currently in the highest y\%, assuming that the class of policies, $\bm{\pi}$ is reasonable enough so that one doesn't accidentally flip the relationship and maintain the inequality!}. 
+
+Finally, we will restrict our policy space, $\bm{\pi}$, to one of finite policies\footnote{Considering continuous policy spaces should be considered of great interest. This restriction is done to simplify the problem here, not because it is necessarily desireable. Embedding policies into continuous spaces is, additionally, not a solved problem and is a natural prerequisite to such a formulation being useful in practise.} and, without loss of generalization, consider the situation of two policies, $\{\pi_0, \pi_1\}$, where $\pi_0$ can be thought of as the null policy, or control, and $\pi_1$ the treatment under question. This allows us to rewrite:
+%
+$$
+\pi^* = h(\tau_1,...,\tau_n)
+$$
+
+Where $\tau_i \coloneqq Y(\pi_1, Z_{i}) - Y(\pi_0, Z_{i})$, the individual treatment effect of the policy. At the point in time in which the social planner is deciding on a policy, $\tau_i$ is unknown and can be formulated as a random variable. 
+
+Consider $\hat{P}(\tau_i | X, \lambda = \lambda_T)$ to be a predictive probability distribution of the treatment effect of the policy on individual $i$ in a target context (domain) described by $\lambda = \lambda_T$\footnote{The parameter $\lambda$ is the same as $\lambda_2$ in Engle's formulation. We drop the subscript for ease of notation here.}. The planner knows the covariates for each individual, $X_i$, and estimates the predictive probability distribution via a prediction function, $f(\cdot)$, trained on a set of 4-tuples, $(Y_i, X_i, \pi_i, \lambda_i)$ where $\lambda_i \in \Lambda_S$ and $\Lambda_S$ consists of a series of domains in which the policy maker has labeled data and $\lambda_T \not \in \Lambda_S$. Thus, the decision function that picks the ``best'' policy must now accept probability distributions: 
+%
+$$
+\pi^* = h(\hat{P}(\tau_1 | X, \lambda_T),...,\hat{P}(\tau_n | X, \lambda_T))
+$$
+
+The treatment effect can be reasonably replaced by its expectation, $ \mathbb{E} [ \tau_i | X, \lambda_T ] $, if the policy objective is maximizing average (or total) welfare. If the policy objective incorporates any sort of aversion to negative outcomes (``let's not completely ruin any of our citizens' lives''), risk aversion, or concerns about paretto efficiency, then the expectation of this random variable will not be sufficient information to pick the best policy $\pi^*$.
+
+We will assume that every policy object can be translated into a loss function that aligns with the decision strategy $h(\cdot)$:
+%
+$$
+\ell(\tau, \hat{P}(\tau | X, \lambda_T))
+$$
+
+Unfortunately, this loss function is technically impossible to calculate, even after the fact, due to Rubin's ``fundamental problem of causal inference'', the fact that $\tau_i$ is unobserved. While the formulation and minimization such a specific loss function would be desirable in the case of different policies, we will, for this article, pose a general formulation that will asymptotically minimize any reasonable loss function: the existence of a consistent estimator for $P(\tau | X)$ such that
+%
+$$
+\hat{P}(\tau | X, \lambda \in \Lambda_S) \rightarrow P(\tau | X, \lambda = \lambda_T)
+$$
+
+Such an estimator can be created if we have the following two conditions: 
+
+\begin{enumerate}
+\item There exists a consistent estimator $\hat{P}(\tau | X, \lambda = \lambda_S) \rightarrow P(\tau | X, \lambda = \lambda_S)$ for any single domain defined by $\lambda_S$. 
+\item $P(\tau | X, \lambda_S) = P(\tau | X) \ \forall \ X, \ P(X | \lambda_T) > 0$. The conditional is invariant across the differences that exist between the source domains and the target domain, within the support of the target domain. 
+\end{enumerate}
+
+I will consider solutions for both conditions in turn. 
+
+\subsection*{Forests as Nonparametric Estimator of the Conditional Treatment Effect Distribution}
+
+Quantile treatment effect with the assumption of rank persistence. 
+
+It follows that any consistent estimator of ATE is an consistent estimator of quantiles and the distribution as well. 
+
+Causal forests are a consistent estimator of ATE (\cite{})
+
+Random forests are a consistent estimator of the full distribution (\cite{})
+
+
+\subsection*{Distributional Invariance Across Domains}
+
+\cite{Peters2015} develop a technique where, given an outcome variable $Y$, and given the assumption that there exists a conditional distribution of that outcome variable that is invariant across domains ($P(Y | X^*, \lambda) = P(Y | X^*)$) for some set of covariates $X^* \in X$, where $X$ is a set of potential covariates that have been measured, one can discover the subset $X^*$ by exploiting the invariance of the conditional distribution. They do this by representing the conditional distribution by a function $g(X)$, parameterizing the function, and looking for a set of invariant parameters across the domains. 
+
+\cite{Rojas-carulla2018} propose a similar idea, but modify it in two ways which we will follow: 
+
+\begin{enumerate}
+\item They use the formulation of Domain Adaptation to frame the problem and measure the effectiveness of their technique. 
+\item They consider the invariance of the conditional to it's domain through an independence test between the conditional distribution and the index label of the domain: $P(Y | X^*, \lambda) = P(Y | X^*)$. Where $\lambda \in \{1,2,\ldots,S \}$ for $S$ source domains. 
+
+\end{enumerate}
+
+\subsection*{Targeted Forests}
+
+My methodology can be considered an extension of Causal Forests (\cite{}), where the objective function of node splitting is augmented by an additional regularization term that penalizes dependence of the conditional treatment distribution across environments during training time. 
+
+Additionally, the splits are not created so as to minimize the loss function across both leafs, but rather are ``targeted'' in that they only minimize the loss function in the leafs where observations from the target distribution fall. Thus, areas of the covariate space, $p(X)$ outside of the support of the target domain are ignored. 
+
+\subsection*{Empirical Performance}
+
+Data consists of 5 recent RCT studies performed on the impact of micro-credit programs on business profit and consumption in developing countries. 
+
+With 5 different domains, I test my method by training on 4 source domains and predicting on the 5th. Results are compared with the estimated ATE implied by the studies, as well as with a ``baseline'' prediction using the coefficient of the CATE as estimated by a linear model in a single domain, comparable to coefficients reported in the original studies. 
+
+
+% Rojas-Carulla's technique, by assuming linearity, sidesteps the problem of support (a linear function has full support, as one just extrapolates the line into infinity, regardless of the support of the data from which the function was learned). 
+
+% This problem of support, and the realities of non-linearities, would seem to be important to economic work, where there can be substantial changes in distributions between countries and time periods across potential interacting variables. 
+
+
+% Despite the restrictions it places on policy objectives, we will restrict our scope, for the current article, to that of averaging total welfare. It would be valuable to extend these ideas to other policy objectives and determine loss functions that apply to them. 
+
+% We define the empirical conditional average treatment effect as: 
+% %
+% $$
+% \tau(x) \coloneqq \frac{1}{N} \sum_N \mathbb{E}[ \Delta U | X]
+% $$
+
+% If the goal is to pick the correct policy, one can consider a loss from picking the incorrect policy equal to the total lost utility: 
+% %
+% $$
+% \ell = \mathbbm{1} \big[ \int \hat{\tau}(x)p(x)dx < 0 \big] \int \tau(x)p(x)dx \\
+% $$
+
+
+
+% a reasonable loss function would be to minimize the squared loss between the empirical conditional average treatment effect and the predicted:  
+% %
+% $$
+% \ell = \sum_i \bigg( \tau(X_i) - \hat{\tau}(X_i) \bigg)^2
+% $$
+
+
+% This creates difficulties for the estimation of any empirical distribution of treatment effects (see \cite{Imbens2004} for a review). 
+
+
+% Rank preservation assumption necessary to estimate the quantile treatment effect...!!! Also necessary to estimate the distribution.
+
+
+% THEOREM?? 
+% Given two domains, $S, D$ and random variables $Y,X$, if $P_S(Y | X) = P_T(Y | X)$, then there exists no other variable $Z$ such that $P_S(Z) \neq P_D(Z)$ and $P_S(Y | X) \nCI Z$ and $P_D(Y | X) \nCI Z$ and $P_S(Y | X, Z) = P_T(Y | X, Z)$.
+
+
+
+
+% information theoretic -- minimize entropy while being invariant. 
+% MSE - minimize variance while be invariant 
+% ??? What else ??? 
+% 
+
+
+\subsection*{}
+
+% The expectation of the predictive treatment distribution for a give individual might, under certain policy objectives (increasing average utility), contain all the relevant information from the predictive treatment distribution. In this case, we might want to calculate the expected treatment effect (ETE).
+
+
+% The expected treatment effect (ETE) for domain $D_t$ is not the same as the average treatment effect (ATE) on domain $D_s$ unless blah blah blah.
+
+% The expected treatment effect is decomposed into: 
+
+% $$
+% ETE  = ATE + ETD(S, D)
+% $$
+
+
+% The invariant average treatment effect (IATE)
+
+% The invariant treatment effect distribution (ITED)
+
+
+
+% It was clear to these economic theorists that human nature, and the all the factors that affect the functioning of an economy, must in some ways be uniform, but in many other ways changeable. Economic theory, any equations or models intended to represent invariant laws, must endogenous the changeable nature of human behavior, institutions, and technology (\cite{Marshack1950}).
+
+
+
+% So what does a formal system that takes into account external validity look like? 
+
+% It must, in some way, deal with the assumption that Hume terms ``the uniformity of nature.'' Trivially, nature will not be uniform in every way, and clearly, we need it to be uniform in some way (Goodman   ). It is thus of interest to us to acknowledge that assumption and seek out frameworks that endogenize the ways in which nature is uniform and the ways in which it changes.
+
+% One can think of a general causal law as a function. The output of the function is the output of interest. The function is parameterized by every variable that effects the output. A framework that endogenizes the process of learning the ways in which nature is uniform is nothing more than a process of finding a single function that is works consistently across time and space\footnote{This idea of an "invariant" mechanism that works across environments is one fundamental definition of causality that has been much discussed in the literature (...).}. If we think of this function nonparametrically, then finding this function consists of two steps: 1) deciding which variables should parameterize the function and 2) collecting output data across the joint support of all those input variables. 
+
+% Collecting data across the entire joint support of the inputs can potentially be extremely difficult in the context of the social sciences. If these input covariates are elements that change slowly over time and space with a high level of autocorrelation (such as the majority of traits that can be considered ``cultural'' or ``social'' in nature), then it will take a very long time, potentially infinite, until we have collected enough data and ``converged'' on the full joint distribution that defines our general causal law \footnote{A useful comparison is to think of Markov chain monte carlo. We might, as a society, be forced to slowly explore locally the evolution of cultural traits that have a large potential impact on outcomes of interest, and if there is some randomness in the system, then this path-dependent process will eventually cover the entire support of the distribution, but it is not clear that it will happen before the sun implodes.}.
+
+% This is not to say that the recover of general causal laws is not of interest or possible in economics. It is definitely of interest and may be possible. Treating the problem as one of nonparametric statistical estimation might require an overwhelming amount of data, but attacking the problem with a hand-written parametric model doesn't require any data whatsoever, supposing one has the right theory. 
+
+
+
+
+% \subsection*{From Particulars to Particulars}
+
+% It should be clear that, while having general causal laws, as parameterized functions, for every outcome of interest would be extremely useful, it is also extremely difficult. While much of theoretical economics often consists of the creation of such functions, they are rarely seriously defended as general causal laws to be used in the way we use Newton's laws in Physics: functions that predict with such accuracy that we regularly trust our lives to them. 
+
+% There are two useful simplifications we can make in this process of inference to make it more feasible. 
+
+% The first is to focus, not on all inputs that determine an outcome, but on one input in particular. We can think of this input as a treatment or a policy. Our function will thus not seek to predict the output given all inputs, but rather, seek to predict the change in the output given our treatment, ceteris paribus. This ceteris paribus clause allows us to ignore all additively separable causes of our effect of interest. Our function will thus be parameterized by our treatment along with a set of ``interacting covariates'' \footnote{These interacting covariates are nothing more than the support factors in the language of Nancy Cartwright or connecting-principles in the language of Nelson Goodman.} and the output of the function will be a level shift in our output variable of interest. 
+
+% It should be clear that this first simplification is not in any way novel, it also happens when we move from structural to reduced-form models in economics.
+
+
+% \subsection*{Autonomy}
+
+
+% Here we can realize the difference between what is possible to falsify, and what is not. 
+
+% There might be a difference between a relation that is autonomous and one that is persistent and the relation might be that the autonomous relation is invariant to hypothetical variations never-before-seen while the persistent one can only be said to be invariant to variations for which we have data. 
+
+% However, the former cannot actually be falsified. 
+
+% That being said, it is important to keep the difference in mind. Bertrand Russel's chicken had discovered a persistent relationship but not one that was autonomous to a hypothetical change in the behavior of its farmer. 
+
+% I will focus on the case where, when we want to discuss claims that are falsifiable with current data on the world, persistent becomes the more actionable version of autonomous. 
+
+
+% It should be clear in the application of this proposed method that one must make an argument, via an appeal to common sense and behavioral theory, that for any latent variables that are: A) likely to have an interative effect and B) likely to vary in its distribution from domain to domain, the following will also hold: C) the variable has varied in its distribution across the various source domains.
+
+
+% \subsection*{Structure is Relative}
+
+% >>> This can potentially be used -- instead of forcing variable sets with invariant properties, the effect of potential latent variables can be bound by the change in output distribution!! 
+
+
+
+\printbibliography
+
+\end{document}

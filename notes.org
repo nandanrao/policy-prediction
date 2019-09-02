@@ -1,0 +1,574 @@
+* Policy Prediction
+
+Current popular wisdom claims that the difference between econometrics and machine learning is that the former is primarily interested in causal inference while the later in prediction.
+
+- Go back to the source of causal inference in economics, find some support for the goal being to provide a tool to aid policy creation through interventional prediction.
+
+- Formulate interventional prediction in terms of transfer learning and causal invariant mechanisms.
+
+- State the goal of unifying these frameworks.
+
+
+GRAPHS!
+
+- Recovery of colliders via independence test searching -- simple extension to regression, library in R!
+
+
+The social planner problem consists of finding the global optimum, in terms of the (somehow) combined utility of the population, over a given set of policies, conditional on a given set of covariates. If there is only one policy in the optimization set, the finding the global optimum consists in choosing between the policy and the null set, given the covariates.
+
+If we are interested in combining the utility of the population is
+some way that is consistent with a summation (average or sum), then we
+
+
+Aberjit:
+
+"Formal procedures for looking at evidence are useful precisely becasue they force us to confront many things that thye don't usually confront."
+
+
+* Thoughts
+
+Maybe my simple mathematical proof is a silly way to describe the difference between internal and external validity, this is probably best done with literature, which will offend fewer people.
+
+I still think that considering the social planners problem is interesting. In particular, understanding the linearity and separability of different causes on the output of interest seems pretty key and missing from Pearl's framework, which doesn't go all the way to formulating regret. It is worth looking to see if that idea exists in RL papers...
+
+1. Formalize internal/external validity with old stats/econ literature (manski, etc.)
+2. Formalize the policy regret with RL literature.
+
+
+
+
+* Nancy Cartwright
+
+- You need to get her two papers with Angus Deaton to motivate lack of external validity in RCTs.
+
+
+* John Stuart Mill
+
+The process of going from general to particular is not that of inference, as that of going from particular to general could not have been made without the knowledge that the fact applied also to the particular case -- generals being nothing but a collection of particulars. Therefore, the process of inference is that of going from particulars to general.
+
+Is it necessary to go from particulars to general, rather than from particulars to particulars? No, the latter is equally valid and often done intuitively.
+
+What is the advantage of going from particular to general? It is a formal framework that allows the individual to avoid "any bias which may affect our wishes or our imagination" -- as when we attempt to apply a fact to a particular case we will have some particular interest in that case!
+
+Of course, if we had a formal framework for going from particulars to particulars, we do not need the framework from going to generals...
+
+
+* Introduction
+
+My interest here is to define a framework for predicting the effect of a new policy on a specific population, place, and time, given a set of evidences from related policies on different populations, places, and times. In other words, this framework performs induction from particulars to particulars, without necessarily uncovering any general laws in the process.
+
+To motivate a need for such a framework I will attempt to show:
+
+1. Traditional counterfactual analysis allows the recovery of general laws from individual studies only under assumptions that are often too strong for economics and the social sciences.
+
+2. This problem leads to a failure of external validity, which is a problem that is not solved and of current concern to empirical economists.
+
+3. Economic theory allows us to reformulate the problem and perform induction directly from particulars to particulars and does not require the recovery of general laws.
+
+Following, I will show that:
+
+1. Focusing on prediction of particulars eases the data requirements from those of recovering general laws. Additionally, by turning it into a prediction problem we open ourselves up to using machinery from machine learning.
+
+2. Techniques from particular fields of machine learning (domain adaptation, multi-task learning, and causality) will allow us to merge heterogeneous data sets will allow us to increase the data we can use, pulling from multiple studies performed across time and space.
+
+3. By simultaneously easing the objective and using more data, we can perform significantly better at predicting the effect of economic policies than anything that attempts to use coefficients from counterfactual studies.
+
+
+** To motivate:
+
+1.
+    * Traditional counterfactual analysis recovers the general when sampled from the population of interest. This requires a certain form of "uniformity of nature" or "projectability" in the words of Hume/Goodman, but we can endogenous those concepts into probability theory and use the theory of conditional independence and causal markov condition to understand what is needed to recover general laws.
+    * The use of dummy variables indicates an inability to make the assumptions necessary to assure generalization. Generalization without further assumptions requires the support on the entire joint distribution of a causal parent blanket, an assumption often not made as it is often not defensible.
+
+2.
+   * External validity has failed in economics and there are many prominent economists concerned about it.
+
+3.
+   * Social planner's problem.
+
+
+* RANDOM:
+
+Structural models are interesting, a technique to compare the form assumptions of a structural model to the conditional independences of the data seems reasonable!
+
+
+* What am I doing?
+
+1. Develop a framework for predicting the effect of a given policy in a given place, conditional on a number of previous studies on different (related) policies in different places and times.
+
+2. This framework will frame the problem as one of domain adaptation.
+
+3. This framework will use ideas from causality to determine an invariant y|x, in the cases where it helps the domain adaptation.
+
+4. The framework will use ideas from graphical models to determine the correct variables to include in a transportable model, to help the domain adaptation.
+
+5. The effectiveness of the framework will be shown given data from the implementation of previous policies and compare the counterfactural results to the counterfactual prediction.
+
+
+Order of operations:
+
+1. Defend the formulation.
+   * Show that counterfactual analysis isn't enough.
+   * Show that this formulation is possible.
+
+2. Create a framework.
+
+* TO READ:
+
+1. Historical and contemporary logicians (Hume, John Suart Mill, Goodman, Cartwright) to define the problem of induction.
+
+2. Historical statisticians and econometricians to connect classicial statistical analysis to the problem of induction as defined by classicial logicians (Fisher, Cowles Commission).
+
+3. Econometricians to lay out the need for external validity and the requirements for generalizability (Shadish, Cook and Campbell, Manski, Deaton, Cartwright).
+
+4. Graphical models to formulate those generalizability requirements (Spirtesd, Pearl, Barenboim).
+
+5. Modern applied econometrics to show that external validity is often sacrificed and the actionable focus is on internal validity (Angrist & Pischke, Duflo & Banerjee, Cooke & Campbell).
+
+
+
+* The need for external validity
+
+RCT's, or natural experiments that replicate them, have recently become the official gold standard of empirical work in economics and many related fields, leading to the so-called "identification police" effect in many discussions of applied economics.
+
+In response to this overwhelming trend, several prominent economists have raised an alarm bell to dampen the party of the "Randomistas," emphasizing that cleanly identified counterfactual analysis is not the end goal of econometrics and that external validity should be considered equally important (\cite{Shadish2002}, \cite{Deaton2010}, \cite{Manski2013}, \cite{Deaton2018}). Following up on those theoretical concerns, a small but growing literature has sprung up around empirically proving the failure of results from prominent RCT studies to extrapolate to new contexts (Pritchett and Sandefur 2015, Alcott 2015, Gechtler 2015, Bisbeee et. al. 2017, Rosenzweig and Udry 2019).
+
+The purpose of this work is to step back and review the concepts of internal and external validity and their place in the scientific process of inference. I will argue that:
+
+1. Many different types of "primary research" are necessary, in order to open up questions and possibilities.
+
+2. The end goal of "applied research," in contrast, is to apply knowledge in particular circumstances.
+
+3. Applying knowledge in particular circumstances is a prediction problem. Formulating the problem as such can provide a coherent framework for making sense of and testing the vast conceptual landscape that questions of internal and external validity open in the social sciences.
+
+
+* On the process of induction and deduction in inference
+
+Following from Aristotelian tradition of logic, inference is broken into two parts: reasoning from particulars to generals (induction) and reasoning from generals to particulars (deduction). Deduction is often recognized by Aristotle's syllogisms, such as:
+
+All men are mortal
+Socrates is a man
+Therefore, Socrates is mortal
+
+Which can be thought of as a general formula for deduction.
+
+The traditional process of knowledge creation via scientific research is that of induction, moving from particulars to generals. The process of applying this knowledge is that of deduction, applying general laws to particular cases.
+
+David Hume introduced the impossibility of induction, claiming that, "As to past Experience, it can be allowed to give direct and certain information of those precise objects only, and that precise period of time, which fell under its cognizance: but why this experience should be extended to future times, and to other objects, which for aught we know, may be only in appearance similar, this is the main question on which I would insist" (Hume ).
+
+It's worth noting that there are two distinct problems Hume raises, that of generalizing from one object to another and that of generalizing from the past to the future. 
+
+Classical statistical inference is a tool in the process of induction that seeks to address the first of Hume's problems. In particular, based in the law of large numbers, it is a process of drawing population inferences from a sample drawn from the population. Thus, one can be said to be in the process of inductive reasoning about the population from which the sample was drawn.
+
+R.A. Fisher himself, in the introduction to The Design of Experiments, explicitly frames his book and techniques in terms of induction, stating "it is possible to draw valid inferences from the results of experimentation... as a statistician would say, from a sample to the population from which the sample was drawn, or, as a logician might put it, from the particular to the general" (Fisher 1935).
+
+Classicial statistical inference allows us to make an assumption (there exists a "population" of items from which I can sample), and with that assumption to reason, not individually but in expectation, from particular to general. It does nothing to solve the problem of time: that the future should be like the past is in no way addressed. Similarly, it does not provide us with tools to make inductions to a population that was not sampled, or to a category that is more general than the population itself. Thus, it can be said to provide answers in a "counterfactual" sense: it allows us to reason about what would have happened had we not measured a small sample, but rather the whole population.
+
+It should be clear that the Neyman-Rubin causal model fulfills the same purpose (Rubin ). It allows us to reason about counterfactuals, what would have happened, on average and in the past, had we treated our entire population rather than a randomized part of a randomized sample drawn from that population. 
+
+Making generalizations from a specific population to a more general one or from the past to the future, however, is not addressed directly in these frameworks. We are still left with the assumption that Hume terms "the uniformity of nature." Trivially, nature will not be uniform in every way, and clearly, we need it to be uniform in some way (Goodman). It is thus of interest to us to acknowledge that assumption and seek out frameworks that endogenize the ways in which nature is uniform and the ways in which it changes.
+
+One can think of a general causal law as a function. The output of the function is the output of interest. The function is parameterized by every variable that effects the output. A framework that endogenizes the process of learning the ways in which nature is uniform is nothing more than a process of finding a single function that is works consistently across time and space. [FOOTNOTE] This idea of an "invariant" mechanism that works across environments is one fundamental definition of causality that has been much discussed in the literature (...). If we think of this function nonparametrically, then finding this function consists of two steps: 1) deciding which variables should parameterize the function and 2) collecting output data across the joint support of all those input variables. 
+
+Collecting data across the entire joint support of the inputs can potentially be extremely difficult in the context of the social sciences. If these input covariates are elements that potentially change slowly over time and space with a high level of autocorrelation (such as the majority of cultural traits), then it will take a very long time, potentially infinite, until we have collected enough data and "converged" on the the full joint distribution that defines our general causal law. [FOOTNOTE] A useful comparison is to think of Markov chain monte carlo. We might, as a society, be forced to slowly explore locally the evolution of cultural traits that have a large potential impact on outcomes of interest, and if there is some randomness in the system, then this path-dependent process will eventually cover the entire support of the distribution, but it is not clear that it will happen before the sun implodes.
+
+This is not to say that the recover of general causal laws is not of interest or possible in economics. Economics has been very successful in discovering many general causal laws that have proven invariant and useful across time and space. But there are many other areas of economics where the laws have not been so easy to recover. 
+
+
+
+
+* Reasoning from particulars to particulars
+
+It should be clear that while having general causal laws, as parameterized functions, for every outcome of interest, would be extremely useful, it is also extremely difficult. While the history of theoretical economics often consists of the creation of such functions, they are rarely seriously defended as general causal laws to be used in the way we use Newton's laws in Physics: functions that predict with such accuracy that we regularly trust our lives to them. 
+
+I argue that there are two useful simplifications we can make in this process of inference to make it more realistic in our field. 
+
+The first is to focus, not on all inputs that determine an outcome, but on one input in particular. We can think of this input as a treatment or a policy. Our general causal law will thus not seek to predict the output given all inputs, but rather, seek to predict the change in the output given our treatment, ceteris paribus. This ceteris paribus clause allows us to ignore all additively seperable causes of our effect of interest. Our function will thus be parameterized by our treatment along with a set of "interacting covariates" [FOOTNOTE: These interacting covariates are nothing more than the support factors in the language of Nancy Cartwright or connecting-principles in the language of Goodman] and the output of the function will be a level shift in our output variable of interest. 
+
+It should be clear that this first simplifaction is not in any way novel, it also happens when we move from structural to reduced-form models in economics.
+
+The second simplification will come from John Stuart Mill. Rather than completing the full process of induction, reasoning from particulars to the general, we will take what he calls a "shortcut" and draw inference directly from particulars to particulars, combining induction and deduction into one step. 
+ 
+He defends this by explaing that "all inference is from particulars to particulars: General propositions are merely registers of such inferences already made, and short formulae for making more: The major premise of a syllogism, consequently, is a formula of this description: and the conclusion is not an inference drawn from the formula, but an inference drawn according to the formula: the real logical antecedent, or premise, being the particular facts from which the general proposition was collected by induction."
+
+In other words, in the process of creating the general law, one has created a series of particular laws, and only once assured that all the particular laws are valid can one be assured of the more general law. Again, we can think of this in a frequentist nonparametric probabilistic sense: one does not have the general causal law until one has data from the entire support of the joint distribution of the inputs. However, one has already reasoned "from particulars to particulars" in the creation of that joint distribution. In effect, the full joint distribution is made up of infinitely many partially-supported distributions that have support only over the actual values of the parameters in the particular target of interest. 
+
+He goes on to caution against the direct reasoning of particulars to particulars because it is "informal" and we are likely to bring our own biases into the process and make mistakes: 
+
+"In reasoning from a course of individual observations to some new and unobserved ase, which we are but imperfectly acquianted with (or we should not be inquiring into it), and in which, since we ar einquiring into it, we probably feel a peculiar interest; there is very little to prevent us from giving way to negligence, or to any bias which may affect our wishes or our imagination, and, under that influence, accepting insufficient evidence as sufficient."
+
+John Stuart Mill goes on to argue that formal procedures, such as that implied by the framework of induction and deduction, allow individuals to avoid these biases. Because, in his world, there was no formal procedure for reasoning from particulars to particulars, but there was for reasoning from particulars to general, he recommended the later as a way to avoid biases of "wishes" and "imagination."
+
+Many modern economists are equally worried about the lack of formal procedures for generalization of study results, without necessarily focusing on the difference between generalizing from particulars to particulars or from particulars to the general. 
+
+Charles Manski argues that formal procedures of generalization have been deemphasized in recent empirical work which has instead focused exclusively on internal validity (Manski 2013). In his own words: "Unfortunately, analyses of experimental data have tended to be silent on the problem of extrapolating from the experiments performed to policies of interest... From the perspective of policy choice, it makes no sense to value one type of validity above the other."
+
+Similarly, Banjerjee and colleagues invent a formal system of "speculation" to create "falsifiable claims" of research studies as an attempt to codify the process of generalization and external validity (Banerjee et al 2016). They state that "it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation." 
+
+Thus, following both John Stuart Mill's claim that inference between particulars to particulars is not only possible but a necessary intermediate step in the induction process and thus "a shortcut", while also following his warning that without formal procedures the process of inference from particulars to particulars is ripe for the influence of personal bias and imagination, I propose that a formal system for reasoning from individual studies in foreign contexts to a target policy in a local context is not only helpful but cannot be harder than extending the validity of studies to a more general context. By focusing on a "target" context, one restricts the support requirements of the input variables to a known quantity that is, likely, a subset of the entire possible domain of the variables. This necessarily eases the data requirements for a nonparametric function that represents our prediction.
+
+
+
+
+* outline
+
+- induction is a tool for going from particulars to generals
+- classical statistical inference is a tool for induction, but only counterfactually. 
+- Going from particular populations to more general ones, or from past to future, requires further assumptions of Hume's "uniformity of nature".
+- Is there a difference between going from one population to another vs. going to a more general causal rule? JSM... 
+- The goal is actually to predict a SINGLE context, given a past history of data. 
+- If that prediction contains a continuous treatment space and uncertainty quantification, we can also begin to think about exploration and studies that can help that SINGLE context. 
+
+
+ways in which nature is uniform and the ways in which it is not, 
+
+The impossibility of proving that assumption, which is the puzzle Hume left, is not of interest here, but 
+
+formalize the ways in which nature must be uniform for our induction to be valid. 
+
+Similarly, if we are to perform generalized causal inference, it will be of interest to seek out statistical frameworks that do allow us to peform induction from one population to another and from the past to the future (which I will argue are, fortunately, special cases of the same problem). 
+
+
+
+
+* Goodman's matches
+
+Goodman illucidates one part of his problem of projectability with conditional counterfactual analysis with a simple example of a match:
+
+If the match had been scratched, it would have lighted.
+
+We can extend his example further and imagine we have used Fisherian statistical analysis to test a sample of matches and provide a generalization to the population of all "matches". If we have an RCT, where we randomly pick some matches to be scratched and some not to be scratched, we can then determine the average treatment effect of having scratched a match: that it would light.
+
+Goodman then goes on to refine his example by stating that there are actually several "connecting-principles" not mentioned in the general statement. Goodman states a refined general causal law:
+
+Every match that is scratched, well made, dry enough, in enough oxygen, etc., lights.
+
+It's worth noting that this general causal law is intuitive to us and seems correct. We can contrast this with the following extension:
+
+Every match that is scratched, well made, dry enough, in enough oxygen, created in 1989, manufactured in Oregon, scratched by male university students between the ages of 18-22, scratched during an election year, scratched during a time when many self-help articles are trending on Twitter, lights.
+
+This example seems ridiculous to us. What, then, is the difference? We will return to that question after defining a few constructs from the literature that will help us answer it. 
+
+It is worth noting, however, that this question is not purely theoretical but, rather, is at stake in every applied economics article. The statistical techniques alone provide us only with the "ridiculously" specific counterfactual, while our interest is in discovering the general causal law. As Shadish, Cook, and Campbell put it: "...a conflict seems to exist between the localized nature of the causal knowledge that individual experiments provide and the more generalized causal goals that research aspires to attain" (Shadish, Cook, and Campbell 2002).
+
+I argue that, in applied economics, we have not yet formalized that process of generalization.
+
+
+"it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation."
+
+As Charles Manski states: "Unfortunately, analyses of experimental data have tended to be silent on the problem of extrapolating from the experiments performed to policies of interest" (Manski 2013). 
+
+
+* Shadish, Cook, and Campbell and the necessary validities
+
+Shadish, Cook, and Campbell define the term validity as "the approximate truth of an inference". With that in mind, they create a "validity topology" to discuss all the ways in which an inference must be true to be a "generalized causal inference". The topology consists of four categories: statistical conclusion validity, internal validity, construct validity, and external validity. 
+
+Statistical conclusion validity can be thought of as the validity of the classicial statistical inference: was the correct conclusion, with the correct confidence bounds, drawn about the population from the sample. 
+
+Internal validity can be thought of about the "identification" of the causal relationship between the variables of interest. In an internally valid study, the reported dependency between the outcome variable and the treatment variable is a causal relationship. Much of econometric theory relating to identification and causality refers to this kind of validity.
+
+Construct validity can be thought of as the way in which we move from the particular implementation of the study to the higher-level construct which it represents. In measurement variables this might involve the way in which we proxy a latent variable. In treatments it might involve the way in which a particular implementation represents a class of interventions. 
+
+External validity is defined as "whether the cause-effect relationship holds over variation in persons, settings, treatment variables, and measurement variables".
+
+I 
+
+
+
+"As a corollary, because methods do not have a one-to-one correspondence with any one type of validity, the use of a method may affect more than one type of validity simultaneously. The best-known example is the decision to use a ran- domized experiment, which often helps internal validity but hampers external validity."
+
+
+
+
+
+
+* Random examples (lithium/diabetes)
+
+
+It's easy to see this in the case of many of our natural sciences. For example, scientists study a certain chemical compound or material (say lithium) and find that it functions well as an anode in batteries. They do this, not by studying all the lithium in the world, but by studying some lithium, and then making the assumption that if some lithium works well as an anode, all lithium will work well as an anode. This process of induction creates a general rule, which companies can then easily apply via the process of deduction:
+
+Lithium works well as an anode.
+I can buy lithium at X/kg.
+Therefore, I can make a good anode for Y.
+
+Classical Statistical Inference is a tool in the process of induction (Fisher). In particular, as it is a process of drawing population inferences from a sample drawn from the population, one can be said to be in the process of inductive reasoning about the population from which the sample was drawn.
+
+Take the example of medicinal trials. A study of a random sample of individuals living in the US with diabetes are shown to have an average decrease of 20% in their fasting glucose levels after taking X 3 times a day for 3 weeks. Statistical analysis allows us to say that, with Y percent certainty, X will have an average treatment effect of lowering the fasting glucose levels of any diabetes patient in the US by 20%. From this, the FDA approves the drug, and doctors apply a process of deductive reasoning to use the drug on their patients:
+
+Diabetes patients have their fasting glucose levels reduced by an average of 20% after taking X.
+This person in my office is a diabetes patient.
+This person, in expectation, will experience a 20% reduction in their glucose levels.
+
+It should be noted that, in both of these cases, it is the ability of the inductive process to reach a certain level of generalization that makes it useful to another individual, on the application side, and allows the use of deductive reasoning to finish the process of inference. In the "categorical" aristotelian framework of reasoning, the "category" that the scientific process is able to reach at, by the nature of the question, is general enough to be powerful.
+
+// Cowles Comission and econometric history!!
+
+How, then, are they able to reach such a general and useful category through the process of induction? Indeed, how were they able to overcome Hume's "problem of induction"? 
+
+I will refer to this process, in its entirety, as "generalized casual inference", following the eponymous landmark book by Shadish, Cook, and Campbell ().
+
+
+
+
+
+* Conditional Independence
+
+I argue that to understand the difference we can invoke the ideas of conditional independence and the causal markov property (Spirtes, Pearl, Hausman). Conditional on the properties that actually affect match-striking (humidity, oxygen, etc.), all other variables (age of striker) are independent of our prediction as to whether or not the match will light.
+
+Similarly, the relationship between the "ridiculous" variables and the "sensical" ones can be explored by invoking the principle of invariance (haussman, pearl). The relationship between these "causal" variables and the lighting of the match is invariant. There is an invariant mechanism that takes as input the level of oxygen, humidity, and construction quality of the match, and outputs the probability of it lighting given a strike. This mechanism, or function, has the same form and produces the same results, regardless of the inputs themselves or their joint distribution.
+
+That will not be true if we include the gender of the striker. Any correlation learned between the gender of the striker and the probability that the match lights will, conditional on the other attributes, be spurious. Thus, on a new data set, even from the same joint distribution, the predictions will fail.
+
+It should be clear that discovering a general causal law is extremely powerful, allowing transportability of the recovered function to any environment without any loss of predictive accuracy. We can build a "match lighting predictor" that will work equally well in any country, at any time in the future, because we have discovered the causal law that guides the lighting of the match.
+
+Indeed, our succesful process of induction allows anyone in the world to easily apply a process of deduction, or ratiocination, to decide if their match will light.
+
+This function predicts the lighting of a match.
+The thing I have in front of me is a match.
+This function will predict the lighting of this thing.
+
+Is it necessary, however, to always determine the general causal law in order to make an inference about a particular fact and situation? Or is it also possible, in contrast, to reason directly from particulars to particulars, which is to say, from past data to a future expectation, without having first ascended through the process of induction to a general law and later descended through sillogysm to apply it to my circumstance?
+
+John Stuart Mill, in __________, tells us that this "detour to the top of a hill" is not necessary for the process of inference. Indeed, he says, we very often reason inductively from one set of particulars to another, without stopping first to come up with a general law.
+
+Blah blah, JSM.
+
+Something about Nancy Cartwright and uses of the causal inference.
+
+How then, can we attempt to formalize the process of prediction to particulars from particulars?
+
+Domain adaptation.
+
+
+
+As opposed to other authors, who follow Cronbach when discussing generalizability of causal inferences, separate the different covariates into units, treatments, variables, and settings (), I will simply refer to every piece of information that describes the world at any given point in space-time as a variable, which is separated into an "outcome" (y), "treatments" (X), and "covariates" (Z).
+
+Adopting the graphical model framework of Causality (Spirtes, Pearl), and making the implied assumptions of the Causal Markov Principle, I claim that the difference between the ridiculous and non-ridiculous examples can be described by the Markov blanket of the (Y,X), a subset of Z. By the definition of the Causal Markov Principle, any variables  in Z outside of the Markov Blanket are independent of y and X conditional on the variables inside the Markov Blanket. [FOOTNOTE] While it is not necessarily clear that this conditional independence relates 1-1 with the mechanical independence of interest to us when considering the application of some policy, I will stick to this as an operational definition. Cartwright explains how this is not a 1-1 definition and how the "degenerate" cases assumed away by this definition are not necessarily ignorable.
+
+Considering conditional independence opens up the problem that I will refer to as "The Problem of Support". Two variables can be independent in a region of their support, but dependent in another region. To determine conditional independence, and exclude variables from the generalization, one must consider both a test of independence and an assumption regarding the support of the variable.
+
+This problem of support is one of the central problems that I seek to address and formalize.
+
+
+
+
+
+* Prediction and ML
+
+One often hears economists say that Machine Learning is good at prediction via correlations, while econometrics analysis is concerned with causal inference.
+
+I argue that this is not a precise statement of difference and, by making it more precise, we can better understand how the elements from each field can aid us in formulating the questions of policy recommendation in a more precise manner.
+
+
+In machine learning, the basic formulation of empirical risk minimization requires a sample from the joint distribution, p(y,x), that will be used for the prediction. Given such a sample, machine learning attempts to build a model that will perform as well as possible on all subsequent observations from that population.
+
+Classical statistical inference is a framework for induction that uses data from a sample of a joint distribution, p(y,x), and makes inference about the population of that same joint distribution.
+
+Counterfactual analysis asks, for a given samepl distribution, what would the resulting joint distribution have been if the system had been exogenously intervened upon in a specific way (usually the modification of one or more "treatment" variables in X). Rubin's Causal Model is an example of this sort of counterfactual analysis.
+
+Counterfactual analysis, such as the potential outcomes framework, was originally paired with classical statistical inference in order to move from predictions about what would have happened in a sample distribution, to what would happen in a population distribution (). Recently, the framework has been paired with machine learning to make predictions about what would happen in a population distribution (). This should be no surprise, as both deal with the translation from sample to population, within the same joint distribution.
+
+General causal laws apply to any joint distribution, including joint distributions that have never been seen. This feature of causal laws is described as invariance () or sometimes modularity ().
+
+Counterfactual analysis does not explicitly attempt to uncover a general causal laws. It attempts to uncover statistical relationships that exist on a specific, observed joint distribution.
+
+A medical study that shows, via counterfactual analysis, that a dose of 500mg daily of substance X has no adverse health effects on humans will not necessarily convince the FDA to approve a medicine that delivers 50000mg daily of substance X. A general causal law between substance X and the human body, on the other hand, would allow for predictions on the effect of any dosage level of substance X.
+
+Can counterfactual analysis uncover a general causal law?
+
+
+Cooke and Campbell refer to this generalization gap as "construct validity generalizations" and "external validity generalizations".
+
+Predicting the effects of an exogenous intervention in a system might
+entail prediction of a joint distribution that has never been seen.
+
+
+As such, it is not enough to pair counterfactual analysis with classical statistical inference nor with
+
+
+
+* Prior Art
+
+
+RCT's come with their own problem of generalizing to a population: that of selection of participants from the full population.
+
+Additionally, any study in one place and time, has the problem of generalizing from THEIR population to a new population in a new place and time.
+
+
+
+
+* Taxes and attitude towards work
+
+Defining general causal laws in the social sciences may be an impossible task simply because so many crucial factors are continuously evolving. 
+
+Try, for example, to create a general causal law, an equation, which relates income tax to effort at work. Clearly (if we leave behind a rational agent model and use our common sense instead) the indivudal's attitude towards work, which will be in a large part socially formed, will have a large effect on that equation. That attitude realistically consists of more than one orthogonal dimensions: guilt, identity, hedonistic desire for purchased goods, hedonistic desire for leisure, etc. There is no reason to believe that, as our rapidly globalizing world continues to rocket forward into the future, those attitudes stay within the same regions of the joint probability space that they were in the past. 
+
+While a general causal law requires a function that works across the entire covariate space, p(X), it is easy to see that that might be very unrealistic. Accepting the locality of a law, however, can allow us to both: A) predict with valid, nonparametric uncertainty quantification and B) plot a course for further research that benefits a particular application.
+
+I should clarify that I am in no way suggesting that it is not desireable or useful to create research that attempts to uncover general causal laws. But I am suggesting that applied research should be focused on the application, and a focus on the application implies a framework that makes the best prediction for the application. 
+
+
+* Heckman and structural models
+
+The same effect that Heckman wants from structural models: that they encode assumptions that allow for extrapolation, can be partially gained in a causal graph: it allows us to make testable assumptions about conditional independences, which is great, and make some assumptions about those, without having to make assumptions about the exact functional form, which is rarely justified but necessary in standard economic models. 
+
+On the other hand: I think it seems clear that discovering "support factors" is extremely important when trying to move from treatment effect to new contexts -- separating the interacting variables from the additively separable variables -- this seems like something theory can help with but clear statistical tests are needed to learn this from data, which I haven't ever come across. 
+
+
+* Another outline
+
+
+- Critique the internal validity / treatment effect literature / randomistas. 
+
+- inference and general causal laws. (all the following are attempts to recover general causal laws, except my proposition).
+
+- Layout the different techniques proffered by those already critical of them (heckman - structural models, shadish/cook - threats to validity, cartwright - qualitative analysis of support factors?, Deaton - ???).
+
+- Layout the idea of invariant mechanisms and their relationship to causal laws, along with the relationship between invariance and domain change (hurwicz).
+
+- Layout ideas of domain adaption. 
+
+- Layout your technique. 
+
+- Layout example algo (targeted forests).
+
+- Shown proof in generated data and in real data. 
+
+
+* Targeted Forests
+
+You need some way to separate the additive from the non-additive part of your outcome equation. If you had that, you can residualize out the additive part and focus on the interactive mechanism, which is all you actually care about. 
+
+Or maybe not, maybe by focusing on the ATE, the difference between Y^1 and Y^0, you can get that for free... all the additive effects disappear, they shouldn't help increase the difference, if they happened to be evenly distributed in the cell -- and if they aren't, you can condition on them through a propensity score. 
+
+But then, you are finding a leaf which maximizes the difference between the treated and control, but penalizes some form of STABILITY (variance?) across ENVIRONMENTS.
+
+
+OK: 
+
+You take a target data point. 
+
+You make a split on a variable, and look only at the cell of the target data point. 
+
+You want to minimize the variance of the treatment cell within each domain (prediction -- you want to predict the treatment effect).
+
+You want the distribution of the treatment effects within that cell to be invariant across domains -- penalize the dependence with the index of the domain (HSIC - Rojas-Carulla).
+
+You also don't want the points to be too far from the target...???
+
+And you want to penalize the cell if it contains too few points, otherwise it will collapse. 
+
+With those criteria, you make cuts -- for a subset of variables and grow a forest. 
+
+And then you move to the next data point, and repeat the process...
+
+
+
+The mechanism P(Y|X) that you are interested in is not just X of treatment, but rather, P(Y|do(X_t=x), X)... In other words, the mechanism is such that we are manipulating one variable, but the mechanism is such that the other variables we are conditioning on are ALL causing Y (we are not interested in predicted Y from non-causal variables... Or are we in finite samples with latent variables??).
+
+If they are not all causing Y, then their relationship will not be invariant...? 
+
+Z -> B
+Z -> V
+X,V,Z -> Y
+
+Y|X=x,V,B
+y|X=x,V
+
+The latter should be invariant. The former, I have no idea...
+
+if B|Z is invariant, then p(Z) might be different for different populations, which leads to p(B) being different, but Y|B should be invariant???
+
+
+* Economic Causal History 
+
+** Frisch 1938
+
+"But when we start speaking of the possibility of a structure different from what it actually is, we have introduced a fundamentally new idea. The big question will now be in what directions should we conceive of a possibility of changing the structure?"
+
+"To get a real answer we must introduce some fundamentally new information. We do this by investigating what features of our structure are in fact the most autonomous in the sense that they could be maintained unaltered while other features of the structure were changed"
+
+"So we are led to constructing a sort of super-structure, which helps us to pick out those particular equations in the main structure to which we can attribute a high degree of autonomy in the above sense. The higher this degree of autonomy, the more fundamental is the equation, the deeper is the insight which it gives us into the way in which the system functions, in short, the nearer it comes to being a real explanation. Such relations form the essence of 'theory'."
+
+"Equations that are obtained by long elimination processes, based on several autonomous equations will have a low degree of autonomy, they will in fact depend on the preservation of a great many features of the total system"
+
+"If the situation is such that the coflux relations are far from giving information about the autonomous structural relations, recourse must be had to experimentation, that is one must try to change the conditions so that one or more of the structural equations is modified. In economics the interview method is a substitute - sometimes bad, sometimes good - for experimentation."
+
+** Haavelmo 1944
+
+Trygve Haavelmo, following Ragnar Frisch's definition of autonomy, claims: 
+
+\begin{displayquote}
+
+``The principal task of economic theory is to establish such relations as might be expected to possess as high a degree of autonomy as possible.''
+\end{displayquote}
+
+What exactly does he mean by autonomy? He gives an example of a car...
+
+\begin{displayquote}
+  ``We say that such a relation has very little autonomy, because its existence depends upon the simultaneous fulfilment of a great many other relations, some of which are of a transitory nature.''
+\end{displayquote}
+
+This dependence on other relations which may be transitory is key...
+
+\begin{displayquote}
+  ``What is the connection between the degree of autonomy of a relation and its observable degree of constancy or persistence? If we should take constancy or persistence to mean simply invariance with respect to certain hypothetical changes in structure, then the degree of constancy and the degree of autonomy would simply be two different names for the same property of an economic relation. But if we consider the constancy of a relation as a property of the behavior of actual observations, then there is clearly a difference between the two properties, because then the degree of autonomy refers to a class of hypothetical variations in structure, for which the relation would be invariant, while its actual persistence depends upon what variations actually occur. On the other hand, if we always try to form such relations as are autonomous with respect to those changes that are in fact \textit{most likely to occur}, and if we succeed in doing so, then, of course, there will be a very close connection between actual persistence and theoretical degree of autonomy''
+\end{displayquote}
+
+
+** Marschak 1950
+
+"Consider changes in human behavior, institutions, technology. The gain (personal or social) du to any such intented or expected change cannot be evaluated unless behavior, instituions, and technology are explicitly stated; such statements must be provided by the form, and by the values of parameters, of the equations of the model, that is, by the structure."
+
+** Simon 1954
+
+Causal ordering, set of "self-contained" systems, determines a causal ordering, this ordering is interesting for computation and solving... etc. etc. -- interesting for it's relationship to causal graphs but nothing is really juicy.
+
+** Hurwicz
+
+Hurwicz discusses the identifiability of a system of equations that constrain the state of the world, given a history of states. He calls this system of equations a "behavior pattern". He claims that: 
+
+"A great deal of effort is devoted in econometrics and elsewhere to attempts at finding the behavior pattern of an observed configuration....But do we really need the knowledge of the behavior pattern of the configuration?... It will be approached here from the viewpoint of prediction... That is, the word "need" in the above question will be understood as "need for purposes of prediction.""
+
+He then goes on to explain that the need is driven by the type of prediction one hopes to make. If it can be assumed that the behavior pattern does not change (i.e. the joint distribution of our variables of interest comes from the same distribution tomorrow as today), then we do not actually need to find the behavioral pattern, as we can predict the state of the world tomorrow based on an expectation of the past. 
+
+If, however, we need to predict for a world in which everything might possibly change, we need to fully understand all the behavioral patterns. We need a "fully identified" model that predicts the state of the world. 
+
+There is a monotonic relationship between these two endpoints: the greater the class of "behavior changes" that one needs to predict within, the greater the identification of the model needs to be.
+
+He then goes on to define what he calls a "structural form" as one which is identified and identical across all possible behavior changes that one needs to predict within. "It should be noted at this point that there seems to be a close relationship between the status of an equation as a natural law in some philosophers' terminology and its status as a structural equation in the terminology of the present paper". 
+
+Thus, his "structural form" and the "natural law" is the sort of "general causal law" that we have been discussing previously. He goes on to stress that: 
+
+"The most important point is that the concept of structure is relative to the domain of modifications anticipated."
+
+In other words, a law is only defined as a law within a certain context. Newtonian physics is a law, within certain domains of the universe (which happens to encapsulate most things we want to do on earth). According to Hurwicz, it is defined as a law only with the context in which the law operates. 
+
+
+
+
+Based on a history of the states of the world, and a set of interdependent equations that restrict the set of admissable states, one can potentially recover the equations themselves (if they are indentifiable).
+
+Why does one care? Prediction under change. If one knows the change in behavior and one knows the previous behavior, then one can predict the state of the world with the future behavior. 
+
+However, even if one does not perfectly identify all the variables ('behavior') that make up the equations, if the amount they are allowed to change is restricted, then one can still predict the state of the world, potentially. In the extreme case, it will be the same if nothing is changed! 
+
+In between, there is a relationship between the size of change allowed and the set of permissible states based on the number of unidentified behaviors. 
+
+Translate this to modern setup: 
+
+If you have identified all the values that cause an outcome, then you can change any of the values arbitrarily and predict the outcome. 
+
+If you have not identified any, but know that none of them will change, you can also predict the outcome. 
+
+If, however, you can restrict the change of the variables to a certain range, this could restrict the possible outcomes, even if the exact effect of the variables is not determined. 
+
+In other words -- if you can see that some variables have a small effect, then even if you can't measure those variables in the target domain, you can bound their effect. 
+
+Similarly, if you can see that some variables have a large effect, but you can measure them, then you can recover their causal effect and predict their effect. 
+
+However, if you have some variables that have a potentially large effect but you cannot measure them (or marginalize them out), then you cannot bound the outcome space. 
+
+
+>>> This can potentially be used -- instead of forcing variable sets with invariant properties, the effect of potential latent variables can be bound by the change in output distribution!! 
+
