@@ -159,7 +159,7 @@ In an ideal world, the research community has discovered a set of general laws t
 % Thus, following both John Stuart Mill's claim that inference between particulars to particulars is not only possible but a necessary intermediate step in the induction process, while also following his warning that without formal procedures the process of inference from particulars to particulars is ripe for the influence of personal bias and imagination, I propose that a formal system for reasoning from individual studies in foreign contexts to a target policy in a local context is not only helpful but cannot be more data-intensive than that of extending the validity of studies to a more general context. By focusing on a ``target'' context, one restricts the support requirements of the input variables to a known quantity that is, likely, a subset of the entire possible domain of the variables. This necessarily eases the data requirements to model any nonlinear function that represents the quantitative relationship in question.
 
 
-\subsection*{Previous Approaches to Dealing with External Validity}
+\subsection*{Previous Approaches to Dealing with External Validity }
 
 \cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. 
 
@@ -323,7 +323,7 @@ $$
 \ell(\tau, \hat{P}(\tau | X, \lambda_T))
 $$
 
-Unfortunately, this loss function is technically impossible to calculate, even after the fact, due to Rubin's ``fundamental problem of causal inference'', the fact that $\tau_i$ is unobserved. While the formulation and minimization such a specific loss function would be desirable in the case of different policies, we will, for this article, pose a general formulation that will asymptotically minimize any reasonable loss function: the existence of a consistent estimator for $P(\tau | X)$ such that
+Unfortunately, this loss function is technically impossible to calculate, even after the fact, due to Rubin's ``fundamental problem of causal inference'', the fact that $\tau_i$ is unobserved. While the formulation and minimization such a specific loss function would be desirable in the case of different policies, I will, for this article, pose a general formulation that will asymptotically minimize any reasonable loss function: the existence of a consistent estimator for $P(\tau | X)$ such that
 %
 $$
 \hat{P}(\tau | X, \lambda \in \Lambda_S) \rightarrow P(\tau | X, \lambda = \lambda_T)
@@ -336,7 +336,26 @@ Such an estimator can be created if we have the following two conditions:
 \item $P(\tau | X, \lambda_S) = P(\tau | X) \ \forall \ X, \ P(X | \lambda_T) > 0$. The conditional is invariant across the differences that exist between the source domains and the target domain, within the support of the target domain. 
 \end{enumerate}
 
-I will consider solutions for both conditions in turn. 
+It should be noted that this general framework works for any predictive output that might be used in the policy choice. Thus, if the policy choice relies only on the average treatment effect, $h(\mathbb{E} \big[ \tau | X, \lambda_T \big])$, then one only needs a consistent estimator for $\mathbb{E} \big[ \tau | X, \lambda_S \big]$ and that the estimator is invariant across domains, $\mathbb{E} \big[ \tau | X, \lambda_S \big] = \mathbb{E} \big[ \tau | X \big]$, in order to have a consistent estimator that will asymptotically minimize the loss function related that policy choice. 
+
+
+\subsection*{Quantile Treatment Effects}
+
+rank preservation, if not, it might in and of itself be of interest to the policy maker, see blah for discussion
+
+We will apply this observation, that a QTE defined in this way is identical to the individual QTE with an assumption of rank preservation, and calculate the latter directly. Within each leaf, we will preserve the rank of the individuals and calculate the difference. Extra individuals in either group are compared to their closest match from the other group. 
+
+
+
+\subsection*{Picking causal covariates vs. creating them}
+
+Often the direct causes of the outcome in consideration are not observed. They are, as such, latent variables. These latent variables might be proxied by an observable (cause) or be caused by an observable. The two factors have very different effects: 
+
+$P(X |Z)$ should be invariant in the case where the latent variable causes its observable proxy, thus, for the transformation to go from $\hat{Z} = f(X)$, it is $f^{-1}$ that must be invariant across domains, requiring a generative model of X from the latent variables to be learned. 
+
+On the contrary, if $P(Z | X)$ is invariant, then a model which generates the latent variables which in turn cause the effect, $Y$, must be invariant. It should be noted that $P(Z)$ is not needed to be constant across domains, as long as the two conditionals can be recoverd. 
+
+
 
 \subsection*{Forests as Nonparametric Estimator of the Conditional Treatment Effect Distribution}
 
@@ -358,14 +377,40 @@ Random forests are a consistent estimator of the full distribution (\cite{})
 \begin{enumerate}
 \item They use the formulation of Domain Adaptation to frame the problem and measure the effectiveness of their technique. 
 \item They consider the invariance of the conditional to it's domain through an independence test between the conditional distribution and the index label of the domain: $P(Y | X^*, \lambda) = P(Y | X^*)$. Where $\lambda \in \{1,2,\ldots,S \}$ for $S$ source domains. 
-
 \end{enumerate}
+
+heinz-deml proposes a similar solution to the problem of domain adaptation in image recognition. Using a series of images in which the same individual, with the same causal characteristics, is captured across multiple domains where orthogonal changes take place. A regularization term is added to the optimization problem of the neural network trained on the source domains. The term penalizes the conditional variance... 
+
+Much of the domain adaptation literature from machine learning focuses on the case where covariate shift holds. Covariate shift describes the situation where $P(Y|X)$ is assumed to be consistent and $P(X)$ is changing across domains. As we are in the situation of discovering the $x \in X$ which is causal for $Y$, we cannot simply make that assumption. Many of the techniques in domain adaptation, however, are developed for situations in which the model is learned on a latent space, thus the reweighting of $X$ consists of a transformation and checking of distributional differences between source domains. One technique for minimizing distances between distributions is that of minimizing the Wasserstein distance. This distance measure has grown in popularity recently due to it's advantageous qualities for optimization: it maintains a gradient even when distributions lack mutual positive support. Thus, the gradient is computable even when distributions are very different from one another. 
+
+These two ideas can easily be combined, that of Wasserstein distance minimization for enforcing distributional similarity and that of regularization of the conditional differences to enforce domain-invariant conditionals. 
+
+Thus, the optimization problem will contain a regularization term: 
+
+$$
+R(\cdot) = \sum_{i,j \in S} W(P(\tau | X_i, \lambda_i),P(\tau | X_i, \lambda_j))
+$$
+
+Which sums the pairwise Wasserstein distance, $W(\cdot)$, of the conditional treatment effect distribution across different domains, $S$.
+
+
+Each split seeks to minimize the variance of the treatment effect ,
+
+
 
 \subsection*{Targeted Forests}
 
 My methodology can be considered an extension of Causal Forests (\cite{}), where the objective function of node splitting is augmented by an additional regularization term that penalizes dependence of the conditional treatment distribution across environments during training time. 
 
 Additionally, the splits are not created so as to minimize the loss function across both leafs, but rather are ``targeted'' in that they only minimize the loss function in the leafs where observations from the target distribution fall. Thus, areas of the covariate space, $p(X)$ outside of the support of the target domain are ignored. 
+
+Traditional forests, Causal forests included, are meant to be ``generic predictors.'' That is to say, after being trained on a set of labelled $(X,Y)$ data, they will make a prediction, $\hat{Y}$ for \textit{any} new data point, $X_i$ that is given to them. This is true for many generic correlation algorithms that are not designed for domain adaption: they are trained on a $P(X,Y)$ and meant to predict on that same joint distribution, thus the training attempts to minimize some loss function across the entire support of the training distribution. 
+
+Targeted trees, on the other hand, is a prediction algorithm meant to predict in a new, known domain. The data points, $X_i$, for which the outcome is predicted are known at training time. This allows us to ignore parts of the distribution from our training data that is not on the support of the target domain. This ensures that the invariant distribution is, in particular, $P(Y|X_T)$ rather tahn $P(Y|X_S)$. 
+
+
+
+
 
 \subsection*{Empirical Performance}
 

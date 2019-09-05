@@ -572,3 +572,22 @@ However, if you have some variables that have a potentially large effect but you
 
 >>> This can potentially be used -- instead of forcing variable sets with invariant properties, the effect of potential latent variables can be bound by the change in output distribution!! 
 
+
+* Mirko's notes
+
+- Data from same experimental problem, different domains. 
+- Like random forest, then add a penalty term for 
+
+- make sure to mention the latest ML you are pulling in!
+
+- Your idea is more fleshed out in your head than on paper. Make sure they see it's fleshed out!!!!
+
+
+- Work on title right away. 
+
+- targeted forests: causality meets domain adaptation
+- target forests: domain invariant structure for policy prediction
+- a methodology for predicting the effect of a policy in new domain, given a set 
+
+
+- same leaf across domains.  
