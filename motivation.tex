@@ -3,6 +3,8 @@
 \addbibresource{external-validity.bib}
 \addbibresource{econ-causal-history.bib}
 \addbibresource{causality.bib}
+\addbibresource{domain-adaptation.bib}
+\addbibresource{economic-forests.bib}
 \addbibresource{extra-citations.bib}
 
 \usepackage{amsmath, amsfonts, mathtools, csquotes, bm, centernot, bbm}
@@ -15,45 +17,61 @@
 \usetikzlibrary{arrows, automata}
 
 \DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\D}{\mathcal{D}}
+
 
 
 \newcommand{\CI}{\mathrel{\perp\mspace{-10mu}\perp}}
 \newcommand{\nCI}{\centernot{\CI}}
 
+\title{ Policy Prediction: The Missing Tool in Experimental Econometrics and a Roadmap to Fix It  }
+
+\author{Nandan Rao}
+
+
 \begin{document}
 
-\title{Relating external validity to domain adaptation: a historical perspective}
+\maketitle
 
 \begin{abstract}
-The external validity of empirical studies is a topic that has received recent attention due to the rise of popularity of the treatment effect model of empirical analysis and the so-called ``crisis of reproducability.'' I review the current debate and put it in a historical context of statistics and econometrics. Further, I relate the historical evolution of this problem in econometrics to recent advances in the machine learning fields of domain adaptation and causal discovery. The exposition of this connection opens up grounds for further research and the development of new methods targeted at policy prediction based on empirical studies.
+Applied economics research is most often ``applied'' to policy making, yet formal frameworks for policy prediction are largely ignored in the literature of experimental and quasi-experimental econometrics. I explain the existence of this gap from a historical perspective, review the current methods that do exist, and set a research agenda to fill it using recent ideas from econometrandics and machine learning. 
 \end{abstract}
 
 
+\section{Introduction}
 
-\subsection*{Introduction}
+Randomized control trials, or natural experiments that replicate them, have become the official gold standard of empirical work in economics and many related fields. More and more, policy makers are encouraged to look to RCTs to make ``evidence-based'' policy decisions (\cite{Manski2013, Cartwright2013}). 
 
-Randomized control trials, or natural experiments that replicate them, have become the official gold standard of empirical work in economics and many related fields. This focus on identification via experimental or quasi-experimental methods has lead to the so-called ``identification police'' effect in many discussions of applied economics, where identification of a causal effect has become the primary qualification for a ``successful'' empirical study.
+Many prominent economists have expressed a concern that RCTs, and the quasi-experimental methods that seek to replicate them (i.e. natural experiments, intrumental variables, regression discontinuity, etc.) are particularly difficult to generalize to new contexts due to their orverarching concern for internal validity, often at the expense of external validity (\cite{Heckman1995, Heckman2008, Deaton2010, Manski2013, Deaton2018}). 
 
-In response to this trend, several prominent economists have raised an alarm bell to dampen the party of the ``randomistas,'' emphasizing that cleanly identified counterfactual analysis is not the end goal of econometrics and that external validity should be considered equally important (\cite{Shadish2002},\cite{Heckman2008}, \cite{Deaton2010}, \cite{Manski2013}, \cite{Deaton2018}).
+Making evidence-based policy decisions is an act of generalizing from previous studies to decisions about the future. Charles Manski \parencite*{Manski2013}, voices the concern that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice... What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
 
-One concern is that this focus on counterfactual identification comes at the detriment of the other parts of the process of scientific induction needed to build knowledge that can be applied by policy makers. Heckman \parencite*{Heckman2008} worries that ``this emphasis on randomization or its surrogates, like matching or instrumental variables, rules out a variety of alternative channels of identification of counterfactuals from population or sample data.'' Similarly, Deaton and Cartwright \parencite*{Deaton2018} worry that ``the lay public, and sometimes researchers, put too much trust in RCTs over other methods of investigation.''
+This silence on external validity means that, despite the huge field of research and techniques for ensuring causal identification (internal validity) via experimental or quasi-experimental methods, very little has been done to either A) create tools to prove that the same results will apply elsewhere or B) create tools to predict the results in a new location, given proven results from one or more experiments. 
 
-Banjerjee and Snowberg \parencite*{Snowberg2016} echo the need for more formal systems for the external validity of experimental studies, saying ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
+Banjerjee himself \parencite{Snowberg2016}, a large proponent of RCTs, has recently echoed the current lack of and need for more formal systems for the generalization of experimental studies, saying ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
 
-Manski \parencite*{Manski2013} voices the concern that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice, it makes no sense to value one type of validity above the other. What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
+A small but growing literature has sprung up around empirically proving that results from prominent RCT or other causally identified studies do not easily extrapolate to new contexts (\cite{Pritchett2016}, \cite{Allcott2015}, \cite{Bisbee2017}, \cite{Rosenzweig2019}). These results emphasize a need for powerful extrapolation tools if policy makers are realistically expected to make decisions based on ``evidence.'' 
 
-Applied research in economics, if it is meant to be ``applied'' to inform policy making, must therefore deal with external validity one way or another. Internal validity, identifying counterfactual effects, is not enough. Many top researchers are concerned about a lack of a rigorous framework for external validity in much applied research.
+Predicting the results of of a policy in a new location is, tautologically, a prediction problem. Machine learning is a field which has been very successful at formalizing prediction problems. Domain adaptation, a subfield of machine learning, formalizes the problem of moving from one (or more) domains with labelled data to a new domain where only unlaballed data is available (\cite[for a survey, see][]{Pan2010}).
 
-Following up on these theoretical concerns, a small but growing literature has sprung up around empirically proving that results from prominent RCT studies do not extrapolate to new contexts (\cite{LantPritchett&JustinSandefur2016}, \cite{Gechter2015}, \cite{Allcott2015}, \cite{Bisbee2017}, \cite{Rosenzweig2019}).
-
-% TODO: add some review about that literature
-
-The purpose of the current work is to review the history of external validity and the process of empirical inference in economics and statistics.... ???
+This article will take the following form: Section 2 will define external and internal validity, their role in scientific inference, review the development of the Fisherian experimental model of statistical inference, and set out the need for a formal framework of extrapolation. Section 3 will argue that a target context is necessary by reviewing the development of such an argument in mid-century econometrics and formalizing their argument in probablistic terms. Section 4 will introduce the concept of domain adaptation in machine learning. Section 5 will review current discussions and state of the art for formal frameworks within the literature of empirical economics and policy prediction. Section 6 will present recent work in machine learning that combines the ideas from structural econometrics and domain adaptation. Section 7 will present conclusions and frame a research agenda. 
 
 
-\subsection*{Definitions}
+% Nineteenth-century economists thought of mathematics as a tool for deductive reasoning in economics, used to derive the logical conclusions of known laws (\cite{Greasley1991}). Statistics, on the other hand, was viewed as a tool for inductive reasoning, used to establish economic regularities that could be considered general laws. Greasley and Morgan \parencite*{Greasley1991} quote Stanley Jevons as saying: 
 
-Critiques against the randomistas have focused on their preference for internal validity and tendency to completely ignore external validity. It is worth defining these terms. The most agreed upon definition seems to come from \cite{Shadish2002}, where they update their taxonomy of validities from \cite{Cook1979}:
+% \begin{displayquote}
+% ``The deductive science of Economy must be verified and rendered useful by the purely inductive science of Statistics. Theory must be invested with the reality and life of fact. But the difficulties of this union are immensely great.''
+% \end{displayquote}
+
+
+
+
+\section{Validity and Counterfactual Identification}
+
+\subsection{A Taxonomy of Validities}
+
+Critiques against the holy status of RCTs have focused on their preference for internal validity and tendency to completely ignore external validity. It is worth defining these terms and reflecting on exactly what it is that experimental methods provide us. The most agreed upon definition of these terms comes from \cite{Shadish2002} (an update of their previously popular taxonomy of validities from \cite{Cook1979}):
 
 \begin{displayquote}
 \textbf{Statistical Conclusion Validity:} The validity of inferences about the correlation (covariation) between treatment and outcome.
@@ -61,13 +79,15 @@ Critiques against the randomistas have focused on their preference for internal 
 \textbf{Internal Validity:} The validity of inferences about whether observed covariation between A (the presumed treatment) and B (the presumed outcome) reflects a causal relationship from A to B as those variables were manipulated or measured.
 
 \textbf{Construct Validity:} The validity of inferences about the higher order constructs that represent sampling particulars.
-
+ 
 \textbf{External Validity:} The validity of inferences about whether the cause-effect relationship holds over variation in persons, settings, treatment variables, and measurement variables.
 \end{displayquote}
 
 Many authors use the term external validity to refer to what Shadish, Cook, and Campbell separate into construct and external validity. As both are involved in generalization, and both are external to the particulars of the sample, I will follow that abuse of terminology and refer to all the challenges of both as ``external validity.''
 
 What, then, is meant by the term ``inference?''
+
+\subsection{Inference and Statistics}
 
 Following from Aristotelian tradition of logic, inference is the process of reasoning and can be broken into two parts: reasoning from particulars to generals (induction) and reasoning from generals to particulars (deduction). Deduction is often recognized by Aristotle's syllogisms, such as:
 
@@ -113,7 +133,7 @@ Holland \parencite*{Holland1986} begins his landmark paper, before formulating t
 
 The success of Fisher's framework of randomization and the Rubin-Neyman causal model comes down to this razor focus in purpose: they make no claims to discover all the causes of a given effect, to discover the mechanism of the cause, or even to separate between a cause or a necessary part of a cause. They allow us to reason about counterfactuals: what would have happened, on average and in the past, had we treated our entire population rather than a randomized part of a randomized sample drawn from that population. It operationalizes Mill's method of differences, creating a pathway to internal validity that is achievable in the real world.
 
-The counterfactual causal model, however, provides no framework for generalizing from a specific population to a more general one or from the past to the future (\cite{Heckman2008}). The ``effects of causes'' is a black-box methodology for causal identification  (\cite{Heckman2008}). It does not require one to answer the question ``why'' and it is therefore inherently context specific: it asks, ``what happened when I did $X$ in context $D$?'' In Fisher's line of work (agriculture), none of those shortcomings were problematic. He was able to randomly sample from the exact population (seeds of grain) to which his inferences needed to generalize.
+The counterfactual causal model, however, provides no framework for generalizing from a specific population to a more general one or from the past to the future (\cite{Heckman2008}). The ``effects of causes'' is a black-box methodology for causal identification  (\cite{Heckman1995}). It does not require one to answer the question ``why'' and it is therefore inherently context specific: it asks, ``what happened when I did $X$ in context $D$?'' In Fisher's line of work (agriculture), none of those shortcomings were problematic. He was able to randomly sample from the exact population (seeds of grain) to which his inferences needed to generalize.
 
 The success of Fisher's randomization in his field of agriculture, and the subsequent success of the Rubin-Neyman causal model in epidemiology, is in no way incidental. These are fields that deal with encapsulated biological units where agreed-upon scientific theory tells us that the relationships in these systems will be invariant to a wide degree of changes that happen in the world from one year to the next or from one country to the next.
 
@@ -123,9 +143,9 @@ These arguments are not made explicitly, but their validity is absolutely necess
 
 While the validity of these arguments is taken for granted in contained biological processes, this is simply not the case in the social sciences. This is why Shadish, Cook, and Campbell lay out 19 different threats to construct and external validity of social science experiments. In the case of growing corn, the threats either simply do not apply or are implicitly neutralized through basic scientific understanding of plant growth.
 
-In the case of economics, the outcomes are regularly based on individuals decisions to consume, work, study, invest, or move. The treatments are regularly subjected to a gauntlet of mediating factors and interacting variables that are highly context-dependent and correlated across individuals in a single place and time. The population for which one wants to draw actionable inference is in the future and it is fundamentally different from the population the sample from drawn from. Arguments for external validity must be made explicit, the internal validity of a study is rarely sufficient for scientific inference in the social sciences.
+In the case of economics, the outcomes are regularly based on individuals decisions to consume, work, study, invest, or move. The treatments are regularly subjected to a gauntlet of mediating factors and interacting variables that are highly context-dependent and correlated across individuals in a single place and time. The population for which one wants to draw actionable inference is in the future and it is fundamentally different from the population the sample from drawn from. Internal validity of a study in economics is not sufficient for actionable inference to take place in a new context. 
 
-\subsection*{The Danger of Informal Inference}
+\subsection{The Danger of Informal Inference}
 
 It might be argued that it is, and should be, up to the sound judgement and expert opinion of the policy maker to determine if a given counterfactual analysis should extrapolate to their context or not. Empirical studies only need to provide internal validity, according to this argument, as the extrapolation is done by experts who know their target domain.
 
@@ -147,76 +167,7 @@ John Stuart Mill argues that formal procedures, such as that implied by the fram
 
 In an ideal world, the research community has discovered a set of general laws that are invariant to all contexts and the policy maker can apply them, via the process of deduction, to get the desired result in their circumstance. But what if that general law has not yet been discovered? Then the policy maker must look at individual studies (particulars) and attempt to infer a prediction for the result of a similar policy in their context. This is exactly the situation that John Stuart Mill has warned is fertile ground for bias and imagination.
 
-
-\subsection*{Current State of the Art in Dealing with External Validity }
-
-\cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. In a sense, they provide a checkbox of things that are worth worrying about. Unfortunately, echoing again Manski's (\parencite*{Manski2008} concern, researchers in applied economics have not systematically adopted a system of discussing threats to external validity.
-
-
-GRADE is an example of this type of system applied in healthcare recommendations. It is a system, formalized to bring together expert opinion. It is not a statistical framework that starts from the original data, it starts from PDFs, read and interpreted by humans, and lets them give grades to the evidence based on stated criteria. 
-
-It provides policy recommendation along the guidelines of patient age, setting, and intervention types. 
-
-What is ``high and middle- income country'' -- what happens with countries on the border? this discretization is clearly problematic. But it's a start. 
-
-
-
-
-Tamil Nadu / Bangladesh
-
-
-Banerjee and Duflo \parencite*{Banerjee2014} discuss concerns to experimental validity and generalization. In describing the concerns, they do not choose to use the taxonomy or terminology of Shadish, cook, and Campbell, instead reinventing a select few of the ideas, indicating a lack of impact the taxonomy of threats has had on the work of lead researchers today. As a primary tool to address external validity of RCTs, they emphasize the need for replication studies. Indeed, they posit what can be thought of as asymptotic theory of external validity from RCTs:
-
-\begin{displayquote}
-``If we were prepared to carry out enough experiments in varied enough locations, we could learn as much as we want to know about the distribution of the treatment effects across sites conditional on any given set of covariates.''
-\end{displayquote}
-
-Asymptotic theory can be comforting, it's nice to know that the road we are on leads somewhere. However, the key term ``any given set of covariates'' must be restricted for this to be actionable in the finite lifespan of our species. The definition of those covariates comes down to defining the uniformity of nature assumption posed by Hume. If the covariate set is infinite, then we assume nothing regarding the nature of uniformity, and induction is impossible.
-
-How, then, do we define those covariates? Which parts of nature must be uniform and which parts are allowed to change? This will answer the following practical question for any policy maker attempting to learn from previous studies: how many studies are enough studies? And if the answer to that question depends on where one intends to implement a new policy, then how can one relate the target context to the context of the studies? These questions are left unanswered.
-
-Athey and Imbens \parencite*{Athey2017} similarly reflect on the recent concerns over external validity quoted previously by the likes of Manski, Deaton, and Heckman. In an article aptly titled \textit{The State of Applied Econometrics: Causality and Policy Evaluation}, they lay out three main recent advances in addressing external validity.
-
-The first advance is that of addressing the concerns about the Local Average Treatment Effect (LATE) measured by instrumental variables (IV) (...). The concerns relate to the generalization of the local effect caused by the variation in the instrument, to the global effect on the entire population (who were potentially not touched by the variation in the instrument in the study).
-
-The second advance is that of addressing concerns regarding the local nature of regression discontinuity designs (...). These techniques all involve various methods to test whether the effect is only present locally at the discontinuity, or whether the effect is likely to extend to the rest of the sample.
-
-Both of these techniques can be thought of addressing ``statistical validity'' in the validity taxonomy of Shadish, Cook, and Campbell, that of drawing inferences to the population from the sample. They do not address construct or external validity, they do not provide any information to the policy maker who is considering making a decision in another context.
-
-The third advance is more salient to the major thrust of external validity: that of combining observational and experimental results.
-
-
-
-
-% Much of the recent econometric literature on external validity focuses on the generalization from local effects to global effects, or from compliers to non-compliers, within the population studied. (EXAMPLES).
-
-% There is, however, a paucity of literature that discusses external validity in the full sense implied by the definitions stated above, that is, valid in another population at another place and time.
-
-
-
-Banjerjee and Snowberg \parencite*{Snowberg2016} create a formal system of ``speculation'' to create ``falsifiable claims'' of research studies as an attempt to codify the process of generalization and external validity that can be attached to any empirical study from the counterfactual paradigm. The falsifiable claims would presumably be used by other researchers to test the assumptions necessary for external validity of the original findings to hold true.
-
-(TODO: something on meta-analysis methods -- Meager)
-
-Nancy Cartwright and Jeremy Hardie \parencite*{Catwright2013} lay out an intuitive, qualitative method for predicting the treatment effect of a policy in your context, given evidence from other contexts. 
-
-
-The most obvious alternative to the treatment effect approach, which addresses the problem of external validity, is that of structural economics (\cite{Heckman2008}).
-
-(TODO: some shortcoming of structural models).
-
-It is worth reviewing the history of structure in economics and seeing how they thought about the problem of external validity.
-
-% Heckman (2008) explains that RCTs solve internal validity, while the problem that ``economic policy analysts have to solve daily'' involves more, and not just the generalization of previous experiments but also the prediction of the effects of policies ``never historically experienced''.
-
-% Heckman (2008)...
-
-% (TODO: some published criticism of the assumptions of structural models. Relate it to uniformity of nature and size of modifications -- very large!)
-
-% Others have proposed methods for ``augmenting'' counterfactual anaylisis to take external validity into account.
-
-
-\subsection*{The Origins of Structure}
+\section{The Origins of Structure}
 
 Economists during the same period as Fisher took a different approach to conceptualizing and thinking about the inference they were doing. Ragnar Frisch, theorizing about macro-dynamic analysis, set out several key ideas relating to the structure of a system and the autonomy of a structure (\cite{Frisch1995}). For Frisch, the ``structure'' of a system was all the characteristics of the phenomena that could be quantitatively described. In his macrodynamic systems, the structure is defined by a set of functional (simultaneous) equations. He then poses the question: what would happen to the system due to an arbitrary change in a single variable? To do so could imply a different ``structure'' than the one which the equations describe, requiring a different set of equations altogether to describe the new system.
 
@@ -253,7 +204,7 @@ He then goes on to define what he calls a ``structural form'' as one which is id
 Thus, there is an inherent and irrevocable connection between what we consider a ``law'' and the degree of changes we require the law to persist across. The law is defined in relation to those changes. Folowing Hume, the performance of induction is always connected to a specific assumption about the uniformity of nature. Additionally, the exact way in which nature must be uniform, for a particular system under study, is defined by the predictions we need to make with the discovered relations in that system.
 
 
-\subsection*{Invariant Conditionals}
+\subsection{Invariant Conditionals}
 
 Robert Engle, building on the work of Frisch and Hurwicz regarding invariant/autonomous structures, creates a statistical definition of what he terms ``super exogoneity.'' A good review of this historical evolution of autonomy can be found in \cite{Aldrich1989}.
 
@@ -269,38 +220,38 @@ and the conditional, $P(y | z, \lambda_1)$ remains invariant to changes in the m
 ``It is clear that any assertion concerning super exogeneity is refutable in the data for past changes in $D(z, | X_{t-1}, \lambda_2)$ by examining the behavior of the conditional model for invariance when the parameters of the exogenous process changed...However, super exogeneity for all changes in the distribution of z, must remain a conjecture until refuted, both because nothing precludes agents from simply changing their behavior at a certain instant and because only a limited range of interventions will have occurred in any given sample period.''
 \end{displayquote}
 
-Writing a system in terms of super exogenous variables is akin to finding Frisch's ``super-structure.'' This is the part of the system that stays invariant to a set of allowable modifications, parameterized by $\lambda_2$. This is the part of the system that must be known in order to make policy predictions, when $\lambda_2$ includes the changes in the policy, whose total causal effect (in the sense of \cite{Pearl2000}) is transmitted to the output variable $y$ through $z$. The existence of such an invariant super-structure is a necessary prerequisite to successfully predict the effects of policy and therefore to successfully inform policy choice from empirical data.
+Writing a system in terms of super exogenous variables is akin to finding Frisch's ``super-structure.'' This is the part of the system that stays invariant to a set of allowable modifications, parameterized by $\lambda_2$. This is the part of the system that must be known in order to make policy predictions, when $\lambda_2$ includes the changes in the policy, whose total causal effect (\cite[in the sense of][]{Pearl2000}) is transmitted to the output variable $y$ through $z$. The existence of such an invariant super-structure is a necessary prerequisite to successfully predict the effects of policy and therefore to successfully inform policy choice from empirical data.
 
-It should be clear that, even if such a super-structure exists, it is possible that $z$ is either fully or partially unobserved. How will that effect the invariance? Consider again the model with a slight modification (we drop $\lambda_1$ for ease of notation, as we are only interested in the conditions under which the conditional distribution is invariant and thus $\lambda_1$ is static):
-%
-$$
-P(y, z_1, z_2, \lambda) = P(y | z_1, z_2)P(z_1 | z_2, \lambda_2)p(z_2 | \lambda_3)
-$$
+This method of looking in the data for a conditional distribution that is invariant to ``structural'' changes that lead to differences in the marginal distribution of its ``inputs'' has formed the basis of new line of work in statistics and machine learning around causal discovery (\cite{Peters2015, Heinze-deml2017, Rojas-carulla2018}). This line of research, in the terms of Engle, can be thought of as methods for model discovery by selecting covariates that are super exogenous to the output in question. They work without making any assumption as to strong or weak exogeneity (\cite[in the sense of][]{Engle1983}) of the covariates, assumptions that are often provided by basic theory in economic contexts. Implications for further research based on such additional assumptions will be returned to in the sequel. 
 
-Where we consider a latent variable, $z_2$, which is independent of the policy modification of interest, $\lambda_2$, and whose generating process is controlled by structural parameter $\lambda_3$. We can marginalize out $z_2$ by fixing $\lambda_3 = \ell$:
-%
-$$
-P(y, z_1, z_2, \lambda_2, \lambda_3 = \ell_3) = P(y | z_1, \lambda_3 = \ell_3)P(z_1 | \lambda_2, \lambda_3 = \ell_3)
-$$
+% It should be clear that, even if such a super-structure exists, it is possible that $z$ is either fully or partially unobserved. How will that effect the invariance? Consider again the model with a slight modification (we drop $\lambda_1$ for ease of notation, as we are only interested in the conditions under which the conditional distribution is invariant and thus $\lambda_1$ is static):
+% %
+% $$
+% P(y, z_1, z_2, \lambda) = P(y | z_1, z_2)P(z_1 | z_2, \lambda_2)p(z_2 | \lambda_3)
+% $$
 
-Thus, our conditional is still invariant to modifications to $\lambda_2$, but it is fixed as regards the structural parameter $\lambda_3$ which determined the distribution of the latent variable $z_2$. If the latent variable, $z_2$, was also effected by the structural parameters $\lambda_2$, then one would have to fix that as well in order to get an invariant conditional:
-%
-$$
-P(y | z_1, \lambda_2 = \ell_2, \lambda_3 = \ell_3)
-$$
+% Where we consider a latent variable, $z_2$, which is independent of the policy modification of interest, $\lambda_2$, and whose generating process is controlled by structural parameter $\lambda_3$. We can marginalize out $z_2$ by fixing $\lambda_3 = \ell$:
+% %
+% $$
+% P(y, z_1, z_2, \lambda_2, \lambda_3 = \ell_3) = P(y | z_1, \lambda_3 = \ell_3)P(z_1 | \lambda_2, \lambda_3 = \ell_3)
+% $$
 
-It is worth considering the implications of the existence of latent variables in the super-structure that are evident in this simple exercise of probability algebra:
+% Thus, our conditional is still invariant to modifications to $\lambda_2$, but it is fixed as regards the structural parameter $\lambda_3$ which determined the distribution of the latent variable $z_2$. If the latent variable, $z_2$, was also effected by the structural parameters $\lambda_2$, then one would have to fix that as well in order to get an invariant conditional:
+% %
+% $$
+% P(y | z_1, \lambda_2 = \ell_2, \lambda_3 = \ell_3)
+% $$
 
-\begin{enumerate}
-\item If the latent variable is not independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) \neq P(z)$), then the relationship cannot be determined generally.
-\item If the latent variable is independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) = P(z)$, then marginalizing out the latent variable results in an invariant relationship.
-\end{enumerate}
+% It is worth considering the implications of the existence of latent variables in the super-structure that are evident in this simple exercise of probability algebra:
 
-This requirement is proved rigorously in \cite{Pearl2014}, where they refer to a relationship as ``transportable'' if it is invariant across a set of modifications.
+% \begin{enumerate}
+% \item If the latent variable is not independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) \neq P(z)$), then the relationship cannot be determined generally.
+% \item If the latent variable is independent of the set of modifications to which a relationship should be invariant ($P(z | \lambda_2) = P(z)$, then marginalizing out the latent variable results in an invariant relationship.
+% \end{enumerate}
 
-Given that $z_2$ is latent, it might be difficult, in practice, to know whether or not it is independent of $\lambda_2$: one cannot directly obtain an empirical estimate of $P(z_2)$. What about going in the reverse direction: if one had empirical data across a set of modifications (different values of $\lambda_2$) and one discovered an empirical conditional distribution $P(y | z_1)$ that is invariant across those modifications, does that imply that $P(z_2 | \lambda_2) = P(z_2)$?
+% This requirement is proved rigorously in \cite{Pearl2014}, where they refer to a relationship as ``transportable'' if it is invariant across a set of modifications.
 
-This method of looking in the data for a conditional distribution that is invariant to ``structural'' changes that lead to differences in the marginal distribution of its ``inputs'' has formed the basis of much recent work in statistics and machine learning around causal discovery (\cite{peters2015}, ...).
+% Given that $z_2$ is latent, it might be difficult, in practice, to know whether or not it is independent of $\lambda_2$: one cannot directly obtain an empirical estimate of $P(z_2)$. What about going in the reverse direction: if one had empirical data across a set of modifications (different values of $\lambda_2$) and one discovered an empirical conditional distribution $P(y | z_1)$ that is invariant across those modifications, does that imply that $P(z_2 | \lambda_2) = P(z_2)$?
 
 % TODO: discuss what Peters says counts as an intervention
 
@@ -308,17 +259,170 @@ This method of looking in the data for a conditional distribution that is invari
 
 % TODO: Put history of domain adaptation in machine learning.
 
-\subsection*{Domain Adaptation}
+\section{Domain Adaptation}
 
-I will consider the term domain adaptation following Ben-David. There are a set of source domains, S, for which labelled data is available and a target domain, T, for which only unlabelled data is available. 
+Consider a domain, $\D$, which we define as consisting of a feature space, $\mathcal{X}$, and a marginal distribution $P(X)$ where $X = \{x_1,\ldots,x_n\} \in \mathcal{X}$. A task, $\mathcal{T}$, consists of an outcome space, $\mathcal{Y}$ and a true generating mechanism $f: \mathcal{X} \rightarrow \mathcal{Y}$.
+
+Many traditional machine learning applications involve the assumption that the domain and the task are the same in the training data and the prediction context. Transfer learning is the generic name for all frameworks that work outside these assumptions, when either the domain, the task, or both are different. 
+
+I will consider the term domain adaptation in the sense of Ben-David \parencite*{Ben-David2006} and Pan and Yang \parencite*{Pan2010}. Under this definition, domain adaptation is a specific form of transfer learning where the task $\mathcal{T}$ is constant and the feature space, $\mathcal{X}$ is the same across all domains. There is a target domain, $\D_T$ from which one has samples $\{x_1,\ldots,x_i\} \in X$ and (one or more) source domain(s), $\D_S$, from which one has tuples $\{(y_1, x_1),\dots,(y_n, x_n)\} \in (Y, X)$. 
+
+The consistency of the task relates to the construct validity in the taxonomy of \cite{Shadish2002}. If the outcome measured in one experiment might be considered to measure a different construct than the outcome measured in another experiment, then the task can not be said to be the same and this problem formulation fails. 
+
+Allow $\mathcal{X} = \{\mathcal{W}, \mathcal{Z}\}$, where $\mathcal{W} = \{W_0, W_1\}$ a binary treatment and $\mathcal{Z} = {Z_1,...,Z_P}$ a set of covariates. The assumption of the consistency of the feature space relies on the construct validity of both the treatment and the covariates. If this validity does not hold, if the covariates or the treatment across domains represent a different construct, then the formulation of domain adaptation does not hold. A formulation in which the feature space is allowed to change would be more appropriate (see ...). 
+
+If one considers a random-variable formulation of the true generating mechanism, $f(\cdot)$, then the assumption of task consistency implies the conditional distribution is consistent across tasks, thus $P(Y_S | X_S) = P(Y_T | X_T)$. This assumption is referred to as covariate-shift, as the only difference between domains $\D_S$ and $\D_T$ is that of the marginal covariate distribution, $P(X_S) \neq P(X_T)$. 
+
+Under the assumptions of covariate shift, Shimodaira \parencite*{Shimodaira2000} shows that the optimum likelihood function for a maximum likelihood estimator of $P(Y_T | X_T)$, given sufficiently large sample size, is obtained by minimizing the weighted loss function trained on labeled data from the source domain and weighted by the ratio $w(x) = \frac{P_T(x)}{P_S(x)}$: 
+%
+$$
+\argmin_{\beta} \sum_i -w(x_i) \log P_S(y_i | x_i, \beta)
+$$
+
+The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance}) has led to many other importance estimation techniques to deal with covariate shift, including estimators that don't require the calculation of estimates of the marginal densities which is prohibitive in high-dimensional spaces or with limited data (\cite{foo}). 
+
+Thus, the covariate shift problem is relatively well solved. The covariate shift assumption is equivalent to that of all the included covariates, $X$, being super-exogenous (as in \cite{Engle1983}) or to them making up the autonomous ``super-structure'' in the terms of Frisch. 
+
+Allow $\mathcal{X} = \{ \mathcal{W}, \mathcal{Z}, \Lambda \}$, where $\Lambda = \{\lambda_1,\dots,\lambda_M\}$ consists of all unobserved variables for which $P_S(\lambda_i) \neq P_T(\lambda_i)$. 
+
+Further, allow for a feature representation function, $g: \mathcal{Z} \rightarrow \mathbb{R}^K$ 
+
+It should be clear that the covariate shift assumption for observed variables amounts to: 
+% %
+% $$
+% P_j(Y | W, Z, \Lambda) = P_j(Y | W, Z)
+% $$
+
+% For $j \in \{S, T\}$.
+
+\section{ Experimental Economics Formulation as Domain Adaptation }
+
+Banerjee and Duflo \parencite*{Banerjee2014} discuss concerns to experimental validity and generalization. As a primary tool to address external validity of RCTs, they emphasize the need for replication studies. Indeed, they posit what can be thought of as asymptotic theory of domain adaptation for RCTs:
+
+\begin{displayquote}
+``If we were prepared to carry out enough experiments in varied enough locations, we could learn as much as we want to know about the distribution of the treatment effects across sites conditional on any given set of covariates.''
+\end{displayquote}
+
+Asymptotic theory can be comforting, it's nice to know that the road we are on leads somewhere. However, the key term ``any given set of covariates'' must be restricted for this to be actionable in the finite lifespan of our species. The definition of those covariates comes down to defining the uniformity of nature assumption posed by Hume. If the covariate set is infinite, then we assume nothing regarding the nature of uniformity, and induction is impossible.
+
+How, then, do we define those covariates? Which parts of nature must be uniform and which parts are allowed to change? Our formulation allows us to 
 
 
+This will answer the following practical question for any policy maker attempting to learn from previous studies: how many studies are enough studies? And if the answer to that question depends on where one intends to implement a new policy, then how can one relate the target context to the context of the studies? 
+
+Hotz et al \parencite*{Hotz2005} provide one of the only canonical models in the econometrics literature for extrapolating from a source context with experimental data and measuring predictions in a target context where such data is not available. Their technical methodology follows \cite{Abadie2006}, using matching with replacement from the target to the source domain to create a bootstrapped dataset on which to run a regression. This can be seen as a reinvention of importance estimation (\cite{Shimodaira2000, Suigyama2008}). The implication of this choice of techniques is the assumption of covariate shift. The failure of their technique to work in certain contexts implies a violation of the covariate shift assumptions. 
+
+\cite{Gechter2015} builds on the technique of Hotz to create bounds for prediction in a new domain, using the difference between outcomes for the control groups $P_S(Y|W_0, Z)$ and  $P_T(W_0, Z)$ to create the bounds. 
+
+These methodologies are lacking two ingredients 
+
+A) they do not incorporate a methodology for discovering heterogeneous treatment effects that can be used to re-marginalize the average treatment effects given a different covariate distribution in the target population and B) they do not provide any formal framework for model selection that determines which covariates to condition on and which to marginalize out to enable a transportable prediction.
+
+
+
+
+
+% TODO
+
+% covariate shift = Y|X independent of \Lambda, where \Lambda includes omitted variables for which P_T(\Lambda) \neg P_S(\Lambda)
+
+% When would this fail? 1. if there is an omitted variable that causes y or 2. when X includes a variable that is caused by an variable that causes y and the variable has the same marginal distribution but the conditional on the included variable has changed from domain to domain. 
+
+% it should be made clear this is not the unconfoundedness assumption of the rubin causal model. 
+
+% How can one determine that such variables do not exist? One could test for the invariance of the conditional directly, the idea of rojas-carulla. 
+
+% Formulating as decision problem / treatment effect can allow us to reduce the number of variables we care about, only those that have interactive effects. This is not done in Hotz! This is a relaxation of the requirements!
+
+% Doing that allows us to focus on the X that have interactive effects with W/Y, and look for an invariant conditional across those X. Excluding variables implies the relationship problem #2. Lack of invariance implies problem #1. 
+
+% Problem #1 can be solved with the creation or addition of new variables that proxy the missing variable. Latent feature space, ala Heinze-deml2017
+
+
+% Given a set of interacting covariates, $\rho \subset \mathcal{X}$, one can determine that covariate shift holds when $P_S(\tau | g(\rho)) = P_T(\tau | g(\rho)$, where $g(\cdot)$ is a feature representation function that removes or transforms variables in $\rho$ to obtain an invariant conditional distribution. 
+
+% The development of this feature representation function, $g\cdot)$, that maintains conditional invariance, is the subject of a new line of research in domain adaptation. \cite{Rojas-carulla2018} develops a feature selection algorithm whereby a subset of the features is selected subject to the constrain of independence between the empirical distributions $P_j(Y|g(X))$ be independent of index $j$, where index $j$ is the index of the source domain on which the estimate was made. \cite{Heinze-deml2017} creates a latent representation function $g(\cdot)$ in the form of a convolutional neural network for image processing and adds a regularization term to penalize the variance in $P(Y | g(X))$ across different "style features" (the features which change across domains). 
+ 
 
 
 
 % \cite{Peters2015} develop a technique where, given an outcome variable $Y$, and given the assumption that there exists a conditional distribution of that outcome variable that is invariant across domains ($P(Y | X^*, \lambda) = P(Y | X^*)$) for some set of covariates $X^* \in X$, where $X$ is a set of potential covariates that have been measured, one can discover the subset $X^*$ by exploiting the invariance of the conditional distribution. They do this by representing the conditional distribution by a function $g(X)$, parameterizing the function, and looking for a set of invariant parameters across the domains.
 
-\subsection*{Invariance in Domain Adaptation}
+
+\section{ Current State of the Art in Dealing with External Validity }
+
+
+
+I will argue that frameworks for discovering heterogeneous treatment effects, such as causal trees (\cite{Athey2016}), must form a part of any methodology that hopes to transfer treatment effects from one domain to another. Following that, I will show that ideas of conditional invariance that can be traced back to mid-century econometricians can motivate the model selection process and that such motivation exists in some recent research in the field of domain adaptation of machine learning (\cite{Rojas-carulla2018}).
+
+
+\cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. In a sense, they provide a checkbox of things that are worth worrying about. Unfortunately, echoing again Manski's (\parencite*{Manski2008} concern, researchers in applied economics have not systematically adopted a system of discussing threats to external validity.
+
+GRADE is an example of this type of system applied in healthcare recommendations. It is a system, formalized to bring together expert opinion. It is not a statistical framework that starts from the original data, it starts from PDFs, read and interpreted by humans, and lets them give grades to the evidence based on stated criteria. 
+
+It provides policy recommendation along the guidelines of patient age, setting, and intervention types. 
+
+What is ``high and middle- income country'' -- what happens with countries on the border? this discretization is clearly problematic. But it's a start. 
+
+
+Tamil Nadu / Bangladesh
+
+Hock/Imbens - They conduct a test to see whether Y|X is consistent across locations, but this does not say anything about T|X. Indeed, the Y|X they test is linear, thus by assumption all of those variables fall out of the treatment effect and the identification of those variables is not actually important... 
+
+However, if Y|X is consistent in the control, they show that it is also consistent in the treatment, which implies one can compute T|X. By using matching with replacement, they are essentially reweighting the errors by the density ratio of the covariates (show this relation!). 
+
+However if Y|X is not consistent, that shows some other latent variable that is effecting Y. This does not mean the latent variable will effect the treatment, however, it might be additive (as was the assumption with all the other variables!). 
+
+They seem to have found (through some ad-hoc method) that there is treatment effect heterogeneity among those who have previously worked and those you had not previously worked. Thus, they do the entire analysis separately for both of these groups. 
+
+
+
+
+
+Athey and Imbens \parencite*{Athey2017} similarly reflect on the recent concerns over external validity quoted previously by the likes of Manski, Deaton, and Heckman. In an article aptly titled \textit{The State of Applied Econometrics: Causality and Policy Evaluation}, they lay out three main recent advances in addressing external validity.
+
+The first advance is that of addressing the concerns about the Local Average Treatment Effect (LATE) measured by instrumental variables (IV) (...). The concerns relate to the generalization of the local effect caused by the variation in the instrument, to the global effect on the entire population (who were potentially not touched by the variation in the instrument in the study).
+
+The second advance is that of addressing concerns regarding the local nature of regression discontinuity designs (...). These techniques all involve various methods to test whether the effect is only present locally at the discontinuity, or whether the effect is likely to extend to the rest of the sample.
+
+Both of these techniques can be thought of addressing ``statistical validity'' in the validity taxonomy of Shadish, Cook, and Campbell, that of drawing inferences to the population from the sample. They do not address construct or external validity, they do not provide any information to the policy maker who is considering making a decision in another context.
+
+The third advance is more salient to the major thrust of external validity: that of combining observational and experimental results.
+
+
+
+
+% Much of the recent econometric literature on external validity focuses on the generalization from local effects to global effects, or from compliers to non-compliers, within the population studied. (EXAMPLES).
+
+% There is, however, a paucity of literature that discusses external validity in the full sense implied by the definitions stated above, that is, valid in another population at another place and time.
+
+
+
+Banjerjee and Snowberg \parencite*{Snowberg2016} create a formal system of ``speculation'' to create ``falsifiable claims'' of research studies as an attempt to codify the process of generalization and external validity that can be attached to any empirical study from the counterfactual paradigm. The falsifiable claims would presumably be used by other researchers to test the assumptions necessary for external validity of the original findings to hold true.
+
+(TODO: something on meta-analysis methods -- Meager)
+
+Nancy Cartwright and Jeremy Hardie \parencite*{Cartwright2013} lay out an intuitive, qualitative method for predicting the treatment effect of a policy in your context, given evidence from other contexts. 
+
+
+% The most obvious alternative to the treatment effect approach, which addresses the problem of external validity, is that of structural economics (\cite{Heckman2008}).
+
+% (TODO: some shortcoming of structural models).
+
+% It is worth reviewing the history of structure in economics and seeing how they thought about the problem of external validity.
+
+% Heckman (2008) explains that RCTs solve internal validity, while the problem that ``economic policy analysts have to solve daily'' involves more, and not just the generalization of previous experiments but also the prediction of the effects of policies ``never historically experienced''.
+
+% Heckman (2008)...
+
+% (TODO: some published criticism of the assumptions of structural models. Relate it to uniformity of nature and size of modifications -- very large!)
+
+% Others have proposed methods for ``augmenting'' counterfactual anaylisis to take external validity into account.
+
+
+
+
+\section{Invariance in Domain Adaptation}
 
 
 
@@ -330,7 +434,7 @@ I will consider the term domain adaptation following Ben-David. There are a set 
 % \end{enumerate}
 
 
-\subsection*{Conclusions and Future Research}
+\section{Conclusions and Future Research}
 
 
 
@@ -357,7 +461,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% \subsection*{Problem Formulation}
+% \section{Problem Formulation}
 
 % We consider the utility of individual $i$ given as $ u(\pi, X_i)$, where $X_i$ is a set of covariates, potentially unique to the individual, and $\pi$ some policy under question. The utility function is considered common across all individuals, but arbitrarily parameterized by individual covariates $X_i$, thus this assumption is non-restrictive.
 
@@ -426,7 +530,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 % It should be noted that this general framework works for any predictive output that might be used in the policy choice. Thus, if the policy choice relies only on the average treatment effect, $h(\mathbb{E} \big[ \tau | X, \lambda_T \big])$, then one only needs a consistent estimator for $\mathbb{E} \big[ \tau | X, \lambda_S \big]$ and that the estimator is invariant across domains, $\mathbb{E} \big[ \tau | X, \lambda_S \big] = \mathbb{E} \big[ \tau | X \big]$, in order to have a consistent estimator that will asymptotically minimize the loss function related that policy choice.
 
 
-% \subsection*{Quantile Treatment Effects}
+% \section{Quantile Treatment Effects}
 
 % rank preservation, if not, it might in and of itself be of interest to the policy maker, see blah for discussion
 
@@ -434,7 +538,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% \subsection*{Picking causal covariates vs. creating them}
+% \section{Picking causal covariates vs. creating them}
 
 % Often the direct causes of the outcome in consideration are not observed. They are, as such, latent variables. These latent variables might be proxied by an observable (cause) or be caused by an observable. The two factors have very different effects:
 
@@ -444,7 +548,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% \subsection*{Forests as Nonparametric Estimator of the Conditional Treatment Effect Distribution}
+% \section{Forests as Nonparametric Estimator of the Conditional Treatment Effect Distribution}
 
 % Quantile treatment effect with the assumption of rank persistence.
 
@@ -455,7 +559,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 % Random forests are a consistent estimator of the full distribution (\cite{})
 
 
-% \subsection*{Distributional Invariance Across Domains}
+% \section{Distributional Invariance Across Domains}
 
 
 
@@ -483,7 +587,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% \subsection*{Empirical Performance}
+% \section{Empirical Performance}
 
 % Data consists of 5 recent RCT studies performed on the impact of micro-credit programs on business profit and consumption in developing countries.
 
@@ -536,7 +640,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 %
 
 
-\subsection*{}
+\section{}
 
 % The expectation of the predictive treatment distribution for a give individual might, under certain policy objectives (increasing average utility), contain all the relevant information from the predictive treatment distribution. In this case, we might want to calculate the expected treatment effect (ETE).
 
@@ -580,7 +684,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% \subsection*{From Particulars to Particulars}
+% \section{From Particulars to Particulars}
 
 % It should be clear that, while having general causal laws, as parameterized functions, for every outcome of interest would be extremely useful, it is also extremely difficult. While much of theoretical economics often consists of the creation of such functions, they are rarely seriously defended as general causal laws to be used in the way we use Newton's laws in Physics: functions that predict with such accuracy that we regularly trust our lives to them.
 
@@ -591,7 +695,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 % It should be clear that this first simplification is not in any way novel, it also happens when we move from structural to reduced-form models in economics.
 
 
-% \subsection*{Autonomy}
+% \section{Autonomy}
 
 
 % Here we can realize the difference between what is possible to falsify, and what is not.
@@ -608,7 +712,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 % It should be clear in the application of this proposed method that one must make an argument, via an appeal to common sense and behavioral theory, that for any latent variables that are: A) likely to have an interative effect and B) likely to vary in its distribution from domain to domain, the following will also hold: C) the variable has varied in its distribution across the various source domains.
 
 
-% \subsection*{Structure is Relative}
+% \section{Structure is Relative}
 
 % >>> This can potentially be used -- instead of forcing variable sets with invariant properties, the effect of potential latent variables can be bound by the change in output distribution!!
 
