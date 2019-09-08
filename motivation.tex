@@ -7,11 +7,13 @@
 \addbibresource{economic-forests.bib}
 \addbibresource{extra-citations.bib}
 
-\usepackage{amsmath, amsfonts, mathtools, csquotes, bm, centernot, bbm}
+\usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
 
 \usepackage[default,light,bold]{sourceserifpro}
 \usepackage[T1]{fontenc}
 
+
+\newtheorem{prop}{Proposition}
 
 \usepackage{pgf, tikz}
 \usetikzlibrary{arrows, automata}
@@ -34,8 +36,10 @@
 
 \maketitle
 
+% TODO: be more specific about "formal frameworks for policy predictions" -- that's just to general, you have more specific definitions.
+
 \begin{abstract}
-Applied economics research is most often ``applied'' to policy making, yet formal frameworks for policy prediction are largely ignored in the literature of experimental and quasi-experimental econometrics. I explain the existence of this gap from a historical perspective, review the current methods that do exist, and set a research agenda to fill it using recent ideas from econometrandics and machine learning. 
+Applied economics research is most often ``applied'' to policy making, yet formal frameworks for policy prediction are largely ignored in the literature on experimental and quasi-experimental econometrics. I explain the existence of this gap from a historical perspective, review the current methods that do exist, and set a research agenda to fill it using recent ideas from econometrandics and machine learning. 
 \end{abstract}
 
 
@@ -43,19 +47,19 @@ Applied economics research is most often ``applied'' to policy making, yet forma
 
 Randomized control trials, or natural experiments that replicate them, have become the official gold standard of empirical work in economics and many related fields. More and more, policy makers are encouraged to look to RCTs to make ``evidence-based'' policy decisions (\cite{Manski2013, Cartwright2013}). 
 
-Many prominent economists have expressed a concern that RCTs, and the quasi-experimental methods that seek to replicate them (i.e. natural experiments, intrumental variables, regression discontinuity, etc.) are particularly difficult to generalize to new contexts due to their orverarching concern for internal validity, often at the expense of external validity (\cite{Heckman1995, Heckman2008, Deaton2010, Manski2013, Deaton2018}). 
+Many prominent economists have expressed a concern that RCTs, and the quasi-experimental methods that seek to replicate them (i.e. natural experiments, intrumental variables, regression discontinuity, etc.) are particularly difficult to generalize to new contexts due to their overarching concern for internal validity, often at the expense of external validity (\cite{Heckman1995, Heckman2008, Deaton2010, Manski2013, Deaton2018}). 
 
-Making evidence-based policy decisions is an act of generalizing from previous studies to decisions about the future. Charles Manski \parencite*{Manski2013}, voices the concern that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice... What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
+Making evidence-based policy decisions is an act of generalizing from previous studies to decisions about the future. Charles Manski \parencite*{Manski2013} voices the concern that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice... What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
 
-This silence on external validity means that, despite the huge field of research and techniques for ensuring causal identification (internal validity) via experimental or quasi-experimental methods, very little has been done to either A) create tools to prove that the same results will apply elsewhere or B) create tools to predict the results in a new location, given proven results from one or more experiments. 
+This silence on external validity means that, despite the huge field of research and techniques for ensuring causal identification (internal validity) via experimental or quasi-experimental methods, very little has been done to either A) create tools to prove that the same results will apply generally in all contexts or B) create tools to predict the results in a specific context, given proven results from one or more experiments. 
 
-Banjerjee himself \parencite{Snowberg2016}, a large proponent of RCTs, has recently echoed the current lack of and need for more formal systems for the generalization of experimental studies, saying ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
+Banjerjee himself \parencite{Snowberg2016}, a large proponent of RCTs, has recently echoed the current lack of and need for more formal systems for the generalization of experimental studies, stating ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
 
-A small but growing literature has sprung up around empirically proving that results from prominent RCT or other causally identified studies do not easily extrapolate to new contexts (\cite{Pritchett2016}, \cite{Allcott2015}, \cite{Bisbee2017}, \cite{Rosenzweig2019}). These results emphasize a need for powerful extrapolation tools if policy makers are realistically expected to make decisions based on ``evidence.'' 
+In response to such theoretical concerns, a small but growing literature  has sprung up around empirically proving that results from prominent RCT or other causally identified studies do not easily extrapolate to new contexts (\cite{Pritchett2016}, \cite{Allcott2015}, \cite{Bisbee2017}, \cite{Rosenzweig2019}). These results emphasize a need for powerful extrapolation tools if policy makers are realistically expected to make decisions based on ``evidence.'' 
 
-Predicting the results of of a policy in a new location is, tautologically, a prediction problem. Machine learning is a field which has been very successful at formalizing prediction problems. Domain adaptation, a subfield of machine learning, formalizes the problem of moving from one (or more) domains with labelled data to a new domain where only unlaballed data is available (\cite[for a survey, see][]{Pan2010}).
+Predicting the results of a policy in a new location is, tautologically, a prediction problem. Machine learning is a field which has been very successful at formalizing prediction problems. Domain adaptation, a subfield of machine learning, formalizes the problem of moving from one (or more) domains with labelled data to a new domain where only unlaballed data is available (\cite[for a survey, see][]{Pan2010}).
 
-This article will take the following form: Section 2 will define external and internal validity, their role in scientific inference, review the development of the Fisherian experimental model of statistical inference, and set out the need for a formal framework of extrapolation. Section 3 will argue that a target context is necessary by reviewing the development of such an argument in mid-century econometrics and formalizing their argument in probablistic terms. Section 4 will introduce the concept of domain adaptation in machine learning. Section 5 will review current discussions and state of the art for formal frameworks within the literature of empirical economics and policy prediction. Section 6 will present recent work in machine learning that combines the ideas from structural econometrics and domain adaptation. Section 7 will present conclusions and frame a research agenda. 
+This article will take the following form: Section 2 will define external and internal validity, their role in scientific inference, review the development of the Fisherian experimental model of statistical inference, and set out the need for a formal framework of extrapolation. Section 3 will argue that a target context is necessary by reviewing the development of such an argument in mid-century econometrics and formalizing their arguments in probabilistic terms. Section 4 will introduce the concept of domain adaptation in machine learning. Section 5 will review current discussions and state of the art for formal frameworks within the literature of empirical economics and policy prediction. Section 6 will present recent work in machine learning that combines the ideas from structural econometrics and domain adaptation. Section 7 will present conclusions and frame a research agenda. 
 
 
 % Nineteenth-century economists thought of mathematics as a tool for deductive reasoning in economics, used to derive the logical conclusions of known laws (\cite{Greasley1991}). Statistics, on the other hand, was viewed as a tool for inductive reasoning, used to establish economic regularities that could be considered general laws. Greasley and Morgan \parencite*{Greasley1991} quote Stanley Jevons as saying: 
@@ -214,11 +218,15 @@ $$
 P(y, z, \lambda) = P(y | z, \lambda_1)P(z | \lambda_2)
 $$
 
-and the conditional, $P(y | z, \lambda_1)$ remains invariant to changes in the marginal $p(z)$ (presumably caused by changes in it's generating process, parameterized by $\lambda_2$), then $z$ is super exogenous. This definition allows super exogoneity to be refuted by data:
+and $\lambda_2$ is independent of, hence contains no information about, the structural parameter of interest $\lambda_1$, then the variable $z$ is said to be weakly exogenous to $\lambda_1$. If, additionally, the conditional distribution, $P(y | z, \lambda_1)$ remains invariant to changes in the marginal $p(z)$ (either caused by changes in it's generating process, parameterized by $\lambda_2$, or through other interventions that modify the values themselves), then $z$ is super exogenous. 
+
+This definition allows super exogoneity to be refuted by data:
 
 \begin{displayquote}
 ``It is clear that any assertion concerning super exogeneity is refutable in the data for past changes in $D(z, | X_{t-1}, \lambda_2)$ by examining the behavior of the conditional model for invariance when the parameters of the exogenous process changed...However, super exogeneity for all changes in the distribution of z, must remain a conjecture until refuted, both because nothing precludes agents from simply changing their behavior at a certain instant and because only a limited range of interventions will have occurred in any given sample period.''
 \end{displayquote}
+
+This clarifies the difference between weak and super exogoneity: one is observational and the other interventional. Weak exogoneity is an observational characteristic, one must only show that structural parameters $\lambda_2$ provide no information for estimating $\lambda_1$. Super exogoneity implies invariance across any possible intervention which changes the distribution of $z$. 
 
 Writing a system in terms of super exogenous variables is akin to finding Frisch's ``super-structure.'' This is the part of the system that stays invariant to a set of allowable modifications, parameterized by $\lambda_2$. This is the part of the system that must be known in order to make policy predictions, when $\lambda_2$ includes the changes in the policy, whose total causal effect (\cite[in the sense of][]{Pearl2000}) is transmitted to the output variable $y$ through $z$. The existence of such an invariant super-structure is a necessary prerequisite to successfully predict the effects of policy and therefore to successfully inform policy choice from empirical data.
 
@@ -261,62 +269,198 @@ This method of looking in the data for a conditional distribution that is invari
 
 \section{Domain Adaptation}
 
+\subsection{Definition and Formulation}
+
 Consider a domain, $\D$, which we define as consisting of a feature space, $\mathcal{X}$, and a marginal distribution $P(X)$ where $X = \{x_1,\ldots,x_n\} \in \mathcal{X}$. A task, $\mathcal{T}$, consists of an outcome space, $\mathcal{Y}$ and a true generating mechanism $f: \mathcal{X} \rightarrow \mathcal{Y}$.
 
-Many traditional machine learning applications involve the assumption that the domain and the task are the same in the training data and the prediction context. Transfer learning is the generic name for all frameworks that work outside these assumptions, when either the domain, the task, or both are different. 
+Many techniques of traditional statistics and machine learning make the assumption that the domain and the task are the same in the training data and the prediction context. Transfer learning is the generic name for frameworks that work outside these assumptions, when either the domain, the task, or both are allowed to change. 
 
-I will consider the term domain adaptation in the sense of Ben-David \parencite*{Ben-David2006} and Pan and Yang \parencite*{Pan2010}. Under this definition, domain adaptation is a specific form of transfer learning where the task $\mathcal{T}$ is constant and the feature space, $\mathcal{X}$ is the same across all domains. There is a target domain, $\D_T$ from which one has samples $\{x_1,\ldots,x_i\} \in X$ and (one or more) source domain(s), $\D_S$, from which one has tuples $\{(y_1, x_1),\dots,(y_n, x_n)\} \in (Y, X)$. 
+I will consider the term domain adaptation in the sense of Ben-David \parencite*{Ben-David2006} and Pan and Yang \parencite*{Pan2010}. Under this definition, domain adaptation is a specific form of transfer learning where the task $\mathcal{T}$ is constant and the feature space, $\mathcal{X}$ is the same across all domains. There is a target domain, $\D_T$ from which one has samples $\{x_1,\ldots,x_i\} \in X$ and (one or more) source domain(s), $\D_S$, from which one has tuples $\{(y_1, x_1),\dots,(y_n, x_n)\} \in (\mathcal{Y}, \mathcal{X})$. 
 
 The consistency of the task relates to the construct validity in the taxonomy of \cite{Shadish2002}. If the outcome measured in one experiment might be considered to measure a different construct than the outcome measured in another experiment, then the task can not be said to be the same and this problem formulation fails. 
 
-Allow $\mathcal{X} = \{\mathcal{W}, \mathcal{Z}\}$, where $\mathcal{W} = \{W_0, W_1\}$ a binary treatment and $\mathcal{Z} = {Z_1,...,Z_P}$ a set of covariates. The assumption of the consistency of the feature space relies on the construct validity of both the treatment and the covariates. If this validity does not hold, if the covariates or the treatment across domains represent a different construct, then the formulation of domain adaptation does not hold. A formulation in which the feature space is allowed to change would be more appropriate (see ...). 
+Allow $\mathcal{X} = \{\mathcal{W}, \mathcal{Z}\}$, where $\mathcal{W} = \{W_0, W_1\}$ a binary treatment and $\mathcal{Z} = {Z_1,\ldots,Z_P}$ a set of covariates. The assumption of the consistency of the feature space relies on the construct validity of both the treatment and the covariates. If this validity does not hold, if the covariates or the treatment across domains represent a different construct, then the formulation of domain adaptation does not hold. A formulation in which the feature space is allowed to change would then be more appropriate (\cite{foo}). 
 
-If one considers a random-variable formulation of the true generating mechanism, $f(\cdot)$, then the assumption of task consistency implies the conditional distribution is consistent across tasks, thus $P(Y_S | X_S) = P(Y_T | X_T)$. This assumption is referred to as covariate-shift, as the only difference between domains $\D_S$ and $\D_T$ is that of the marginal covariate distribution, $P(X_S) \neq P(X_T)$. 
+If one considers a random-variable formulation of the true generating mechanism, $f(\cdot)$, then the assumption of task consistency implies the conditional distribution is consistent across tasks, thus $P_S(Y | X) = P_T(Y | X)$. This assumption is referred to as ``covariate shift'', as the only difference between domains $\D_S$ and $\D_T$ is that of the marginal covariate distribution, $P_S(X) \neq P_T(X)$. 
 
-Under the assumptions of covariate shift, Shimodaira \parencite*{Shimodaira2000} shows that the optimum likelihood function for a maximum likelihood estimator of $P(Y_T | X_T)$, given sufficiently large sample size, is obtained by minimizing the weighted loss function trained on labeled data from the source domain and weighted by the ratio $w(x) = \frac{P_T(x)}{P_S(x)}$: 
+Under the assumptions of covariate shift, Shimodaira \parencite*{Shimodaira2000} shows that the optimum likelihood function for a maximum likelihood estimator of $P_T(Y | X)$, given sufficiently large sample size, is obtained by minimizing the weighted loss function trained on labeled data from the source domain and weighted by the ratio $w(x) = \frac{P_T(x)}{P_S(x)}$: 
 %
 $$
 \argmin_{\beta} \sum_i -w(x_i) \log P_S(y_i | x_i, \beta)
 $$
 
-The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance}) has led to many other importance estimation techniques to deal with covariate shift, including estimators that don't require the calculation of estimates of the marginal densities which is prohibitive in high-dimensional spaces or with limited data (\cite{foo}). 
+The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance}) has led to many other importance estimation techniques to deal with covariate shift (\cite{foo}). 
 
-Thus, the covariate shift problem is relatively well solved. The covariate shift assumption is equivalent to that of all the included covariates, $X$, being super-exogenous (as in \cite{Engle1983}) or to them making up the autonomous ``super-structure'' in the terms of Frisch. 
+For the rest of this article, I will focus on the goal of formulating policy prediction problems such that the covariate shift assumption. If that assumption holds, the task of policy prediction in a new context can be solved with a relatively straight-forward application of importance estimation techniques.
 
-Allow $\mathcal{X} = \{ \mathcal{W}, \mathcal{Z}, \Lambda \}$, where $\Lambda = \{\lambda_1,\dots,\lambda_M\}$ consists of all unobserved variables for which $P_S(\lambda_i) \neq P_T(\lambda_i)$. 
+\subsection{ Domain Adaptation in Econometrics }
 
-Further, allow for a feature representation function, $g: \mathcal{Z} \rightarrow \mathbb{R}^K$ 
+The problem of covariate shift has a related, long history in the problem of overcoming sample selection bias in econometrics (\cite{Manski1977}). However, the formulation of domain adaptation, where data from two separate contexts is considered and a model trained on one is tested against another, is rarely studied explicitly. 
 
-It should be clear that the covariate shift assumption for observed variables amounts to: 
+Hotz et al \parencite*{Hotz2005} provide one of the only canonical models in the econometrics literature, that I am aware of, for extrapolating from a source context with experimental data and measuring predictions in a target context where such data is not available. 
+
+Their technical methodology follows \cite{Abadie2006}, using matching with replacement from the target to the source domain to create a bootstrapped dataset on which to run a regression. This can be seen as a reinvention of importance estimation (\cite{Shimodaira2000, Suigyama2007}). The implication of this choice of techniques, as shown previously, is the assumption of covariate shift. The failure of their technique to work in certain contexts implies a violation of the covariate shift assumptions. They try adding additional personal covariates to their model and find that doing so has little effect on their predictive ability. Their models are linear and additive and they deal with treatment heterogeneity by splitting the sample into two groups, according to a variable previously identified, and running all analyses separately. They predict the outcomes of control and treatment groups separately and introduce t-tests to compare the distributions of the predicted outcomes with that of the actual outcomes. This leads to a potential test of transportability by looking at the t-test of the control group outcomes. 
+
+\cite{Gechter2015} builds on the technique of Hotz, but rather than using a statistical test to determine if the model is transportable or not, he creates bounds for prediction in a new domain, using the difference between outcomes for the control groups $P_S(Y|W_0, Z)$ and  $P_T(W_0, Z)$ to create the bounds. 
+
+These methodologies are lacking in the following ways: 
+
+\begin{enumerate}
+\item A theoretical justification for the technique in terms of the assumptions involved, related to observable and unobservable variables, that may or may not fail in practice. 
+\item A formal framework for model selection that determines which covariates to condition on and which to marginalize out to enable a transportable prediction.
+\item A focus on outcomes rather than treatment effects and a resulting lack of a methodology for discovering heterogeneous treatment effects.
+\end{enumerate}
+
+The following sections will be devoted to showing why these features matter and how they can be addressed with recent ideas from both machine learning and econometrics. 
+
+% Hock/Imbens - They conduct a test to see whether Y|X is consistent across locations, but this does not say anything about T|X. Indeed, the Y|X they test is linear, thus by assumption all of those variables fall out of the treatment effect and the identification of those variables is not actually important... 
+
+% However, if Y|X is consistent in the control, they show that it is also consistent in the treatment, which implies one can compute T|X. By using matching with replacement, they are essentially reweighting the errors by the density ratio of the covariates (show this relation!). 
+
+% However if Y|X is not consistent, that shows some other latent variable that is effecting Y. This does not mean the latent variable will effect the treatment, however, it might be additive (as was the assumption with all the other variables!). 
+
+
+\subsection{ Exogoneity and Covariate Shift}
+
+\cite{Pearl2014} offers a full set of conditions in which conditional distributions are transportable. As their setup relies on the do-calculus of \cite{Pearl2000} and it is more than we need for our illustrative purposes here, I leave the reader to follow the references if they are of interest. I will, however, provide a small set of propositions to connect exogoneity and the concept of covariate shift, whose connection to their derived conditions will be obvious to anyone familiar. 
+
+The following propositions will help us understand, in terms of exogoneity, different ways by which the covariate shift assumption can fail. 
+
+Consider a source domain, $\D_S$ and a target domain $\D_T$, with feature space defined as $\mathcal{X} = \mathcal{Z} \cup \mathcal{H}$. $Z \in \mathcal{Z}$ is a set of observable covariates, where $P_S(Z) \neq P_T(Z)$, and $H \in \mathcal{H}$ a set of unobservable covariates. 
+
+\begin{prop}
+  The covariate shift assumption is violated if the variable set $Z$ is not super exogenous.
+\end{prop}
+
+\begin{proof}
+  This follows directly from the definition of super exogoneity: a failure of super exogoneity implies that the conditional distribution $P(Y|Z)$ is not invariant to changes in $P(Z)$, which implies that $P_T(Y|Z) \neq P_S(Y|Z)$ given the assumption that $P_S(Z) \neq P_T(Z)$.
+\end{proof}
+
+\begin{prop}
+  The covariate shift assumption holds if the variable set $Z$ is super exogenous and $P_S(Y|Z, H) = P_S(Y | Z)$.
+\end{prop}
+
+\begin{proof}
+As $Z$ and $H$ encompass all variables and are thus the only possible changes across domains, this follows directly from super exogoneity of $Z$, $P_S(Y|Z, H) = P_S(Y | Z) = P_T(Y | Z)$.
+\end{proof}
+
+\begin{prop}
+  The covariate shift assumption holds if the variable set $\{ Z \cup H \}$ is super exogenous and $P_S(H|Z) = P_T(H|Z)$.
+\end{prop}
+
+\begin{proof}
+  Super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H|Z) dH = \int P_T(Y|Z,H)P_T(H|Z) dH = P_T(Y|Z)$.
+\end{proof}
+
+\begin{prop}
+  The covariate shift assumption does not hold if the variable set $\{ Z \cup H \}$ is super exogenous and $P_S(H|Z) \neq P_T(H|Z)$.
+\end{prop}
+
+\begin{proof}
+  The reverse of the previous proposition: super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H|Z) dH = \int P_T(Y|Z,H)P_T(H|Z) dH \neq P_T(Y|Z)$.
+
+\end{proof}
+
+% if H is weakly exogenous and Z is super exogenous, the covariate shift assumption holds given there is no intervention on H: 
+
+% $\int P_S(Y|Z,H)P_S(H, \lambda_S)dH = \int P_T(Y|Z,H)P_T(H, \lambda_T) dH$. By assumption of weak exogoneity, $\lambda_2$ is independent of the estimation of $P_S(Y|H) = \int P_S(Y|H,Z)P(Z|H) dZ$
+
+I will provide a concrete example to underscore the relevance of these propositions.
+
+\subsection{An Example Application: Microcredit}
+
+Consider the case of microcredit experiments of ....
+
+In this example, it is easy to imagine unobservable variables that might effect the profit of the business and additionally might interact with the treatment of access to microcredit. One such unobservable was  made by Abhijit Banerjee: he proposed that many of the individuals in these studies who have their own business do not actually romantacise entrepreneurship in the way that economists do. Indeed, many would prefer to have salaried jobs, often from the state, than to run their own small business. Given credit, they may not invest very vigorously in their business because they don't actually believe it can grow, nor do they spend any time imagining it growing to be anything more than it is. 
+
+Let's call such an unobservable, entrepreneurialness. As it is unobservable, we will call it $H$. This characteristic, however, certainly effects other characteristics that we do observe, $Z$ and might try to include in our predictive model $P(Y|Z)$. For example, the number of past loans or number of previous businesses. 
+
+$Z$ will consists of the following variables: $W \in \{ W_0, W_1\}$ will represent the treatment (some increased availability of microcredit to the individual) and $z_2$ will consists of the observed variables that proxy entrepreneurialness but do not effect profits in any direct way, thus $P(Y|H,W,z_2) = P(Y|H,W)$. We will also assume that the treatment, $H$, is randomized (with full participation for the sake of simplicity) such that $P(H|W,z_2) = P(H|z_2)$.
+
+It should be clear, based on our propositions, that the covariate shift assumptions can fail based on two conditions that may or may not hold between the source and the target domain: 
+
+\begin{enumerate}
+\item $P_S(H) = P_T(H)$
+\item $P_S(H|z_2) = P_T(H|z_2)$
+\end{enumerate}
+
+We take each possibility in turn (the technical conditions are taken directly from \cite{Pearl2014} and adapted to this scenario):
+
+\subsubsection*{$P_S(H) = P_T(H)$ and $P_S(H|z_2) \neq P_T(H|z_2)$} 
+
+In this case, $P_S(Y|W) = \int P_S(Y|W,H,z_2)P_S(H) dH = P_T(Y|W)$, thus the invariant condition is given by $P(Y|W)$. In contrast, $P(Y|W,z_2)$ will not be invariant: $P_S(Y|W,z_2) = \int P_S(Y|W,H,z_2)P_S(H|z_2) dH \neq P_T(Y|W,z_2)$.
+
+\subsubsection*{$P_S(H) \neq P_T(H)$ and $P_S(H|z_2) = P_T(H|z_2)$}
+
+This will provide an outcome that is the reverse of the above: $P_S(Y|W,z_2) = \int P_S(Y|W,H,z_2)P_S(H|z_2) dH = P_T(Y|W,z_2)$, thus the invariant condition is given by $P(Y|W,z_2)$. In contrast, $P(Y|W)$ will not be invariant: $P_S(Y|W) = \int P_S(Y|W,H,z_2)P_S(H) dH \neq P_T(Y|W)$.
+
+\subsubsection*{$P_S(H) = P_T(H)$ and $P_S(H|z_2) = P_T(H|z_2)$} 
+
+In this case, both the conditionals will be invariant, the proof is the same as above.
+
+\subsubsection*{$P_S(H) \neq P_T(H)$ and $P_S(H|z_2) \neq P_T(H|z_2)$} 
+
+In this case, neither of the conditionals will be invariant, the proof being again the same as above. 
+
+Given that $H$ is unobserved, the empirical evidence for the distribution of $P(H)$ and $P(H|z_2)$ across domains is not easily recovered given a single source domain and a single target domain\footnote{It is potentially possible to say something about $P(H|z_2)$. Under the assumption that $H$ is the direct cause of $z_2$, without any unobserved confounding variables, we can say that $P(z_2|H)$ will be invariant and independent from $P(z_2)$ but $P(H|z_2)$ will not (\cite[see][for an exposition of this feature which is closely related to weak exogoneity but not directly proved by it]{Daniusis2010, Sch2012, Peters2017}). Thus, $P(H|z_2)$ will be invariant across domains if $P_S(z_2) = P_T(z_2)$. This is a testable assumption!} Similarly, one might not be able to theoretically prove that there is not another unobserved variable, $H_2$, for which no proxy was measured and whose marginal distribution might differ across domains ($P_S(H) \neq P_T(H)$). Given data from only one domain, we do not have any clear way to empirically show that $H_2$ does not exist and does not throw off the predictive distribution by a potentially large degree. 
+
+A reasonable seeming alternative would then be to try and find labeled data from more than one domain. If one has such data from two domains, $\D_{S1}$ and $\D_{S2}$, then one could directly check the conditional invariance of $P_{S1}(Y|W) = P_{S2}(Y|W)$ and $P_{S1}(Y|W,z_2) = P_{S2}(Y|W,z_2)$. Under the assumption that any changes to unobservable variables between $\D_S$  and $\D_T$ will also exist between $\D_{S1}$ and $\D_{S2}$, one can thus check the transportability of the two possible predictive conditional distributions. 
+
+This is very close to the idea pursued by Rojas-carulla et al (\cite{Rojas-carulla2018}). They operationalize the testing of invariance of the conditional to it's domain through an independence test between the residuals of a parametric model for the output and the index label of the domain: $P(Y - f(X^*, S)) = P(Y - f(X^*))$, where $S = \{1,2,\ldots,K \}$ for $K$ source domains. They use this constraint to look for a subset of the features $X^* \in X$ for which conditional invariance holds. 
+
+Christina Henze-Deml \parencite*{Heinze-deml2017} proposes a similar solution to the problem of domain adaptation in image recognition. Using a series of images in which the same individual, with the same causal characteristics, is captured across multiple domains subject to shifts in orthogonal features. A regularization term is added to the optimization problem of the neural network trained on the source domains. The term penalizes the conditional variance of the prediction $\mathbb{V}\big[ \hat{Y}| g(X) \big]$ for feature representation function $g(\cdot)$ applied to features where the ``causal characteristics'' are known to be the same. Through the regularization, the function $g(\cdot)$ learns a representation for which the conditional distribution of the outcome is invariant across domains. 
+
+Thus, the general formulation of these techniques is to consider the problem one of feature representation, where $g: \mathcal{Z} \rightarrow \mathbb{R}^D$ consists of a representation function that might search through variables $Z$ or search over latent representations of variables $Z$ to discover a model that is predictive of the outcome, subject to the constraint of a conditional distribution that is invariant across domains. Quite naturally, as done in both of the above references, one must do this in a way to avoid problems of multiple testing and overfitting either through levels of significance for variable inclusion or cross validation. 
+
+\subsection{Treatment Effects}
+
+In both the econometric formulations of domain adaptation as well as those from machine learning, the focus of the literature has been on predicting the outcome itself. In many cases, a policy maker might be more interested in predicting the treatment effect, which can be thought of as a relaxation of the problem of predicting outcomes. Indeed, if one had the predicted outcomes, one would have the treatment effect, but not the other way around. 
+
+What implication does treatment effect prediction have for the extension of the frameworks introduced above? Consider the case where the true data generating process of the outcome, $Y$, is linearly separable into two parts: 
+%
+$$
+Y(W,Z) = f_t(W,Z_1) + f_e(Z_1, Z_2)
+$$
+
+Where $Z = \{ Z_1, Z_2 \}$, the set of observed covariates and $W \in \{ W_0, W_1 \}$ a binary treatment variable, as above. Let $\tau(z)$ be the conditional average treatment effect: 
+
+\begin{align*}
+\tau(z) &= \mathbb{E} \big[ Y(W_0, Z) - Y(W_1, Z) | Z = z \big] = \tau(z_1)
+\end{align*}
+
+Thus, $\tau(\cdot)$ only relies on a subset of $Z_1 \subset Z$. Treating $\tau_i$ as a random variable (dropping the explicit dependence on $z_1$) this allows us to achieve the covariate shift assumption with the invariance of the conditional distribution $P(\tau | Z_1)$ across domains, which relies on weakly fewer variables. Given all the threats to transportability outlined by our propositions above, this could be a major benefit in practice if the outcome is a linear combination of causes. 
+
+Estimating the treatment effect, however, comes with its own complications. Due to Holland's \parencite*{Holland1986} ``fundamental problem of causal inference,'' $\tau_i$ is not actually observed and estimating its conditional distribution relies on additional assumptions (\cite{Firpo2007}). One must also also employ methods designed to find the heterogeneous treatment effect variables that make up $Z_1$ in a way which does not run into multiple testing problems. Luckily, there has been recent interest in developing powerful nonparametric techniques, such as causal trees (\cite{Athey2016}), that perform exactly this function.
+
+Thus, by combining these recent techniques from econometrics and machine learning, I argue that it is both desirable and likely possible to develop techniques to predict the effect of a policy, $W$, on a new domain $\D_T$, given conditional treatment effect distributions, $P_1(\tau | g(Z_1)),\ldots, P_S(\tau | g(Z_1))$, from source domains $\D_S$ and a learned feature representation function $g(\cdot)$ that enforces conditional invariance such that the covariance shift assumption holds and importance estimation methods can be used to predict effects on a target population. 
+
+
+
+
+% Given a set of interacting covariates, $\rho \subset \mathcal{X}$, one can determine that covariate shift holds when $P_S(\tau | g(\rho)) = P_T(\tau | g(\rho)$, where $g(\cdot)$ is a feature representation function that removes or transforms variables in $\rho$ to obtain an invariant conditional distribution. 
+
+
+ 
+
+% \cite{Peters2015} develop a technique where, given an outcome variable $Y$, and given the assumption that there exists a conditional distribution of that outcome variable that is invariant across domains ($P(Y | X^*, \lambda) = P(Y | X^*)$) for some set of covariates $X^* \in X$, where $X$ is a set of potential covariates that have been measured, one can discover the subset $X^*$ by exploiting the invariance of the conditional distribution. They do this by representing the conditional distribution by a function $g(X)$, parameterizing the function, and looking for a set of invariant parameters across the domains.
+
+
+% Weak exogoneity is a concept that relates directly to the autonomy of the mechanism, $f(Z)$, that generates the outcome, to the systems that generate $Z$. This assumption can reasonably be argued, and often is, theoretically in economic systems. One might have reasons to believe that the covariates, $Z$, are determined by a process that is fully independent of the process that controls the outcome. 
+
+% Even if weak and super exogoneity hold, that does not imply that the covariate shift assumption will hold across domains. 
+
+
+
+% Allow $\mathcal{X} = \{ \mathcal{W}, \mathcal{Z}, \Lambda \}$, However, Even if the considered covariates, $X$, are weakly exogenous to the generating mechanism of $Y$, however, the However, Even if the considered covariates, $X$, are weakly exogenous to the generating mechanism of $Y$, however, the where $\Lambda = \{\lambda_1,\dots,\lambda_M\}$ consists of all unobserved variables for which $P_S(\lambda_i) \neq P_T(\lambda_i)$. 
+
+% Further, allow for a feature representation function, $g: \mathcal{Z} \rightarrow \mathbb{R}^K$. In its simplest form, this feature representation function can be considered as the decision of which variables from $Z$ to include in the conditional distribution. We will allow the conditional 
+
 % %
 % $$
 % P_j(Y | W, Z, \Lambda) = P_j(Y | W, Z)
 % $$
 
 % For $j \in \{S, T\}$.
-
-\section{ Experimental Economics Formulation as Domain Adaptation }
-
-Banerjee and Duflo \parencite*{Banerjee2014} discuss concerns to experimental validity and generalization. As a primary tool to address external validity of RCTs, they emphasize the need for replication studies. Indeed, they posit what can be thought of as asymptotic theory of domain adaptation for RCTs:
-
-\begin{displayquote}
-``If we were prepared to carry out enough experiments in varied enough locations, we could learn as much as we want to know about the distribution of the treatment effects across sites conditional on any given set of covariates.''
-\end{displayquote}
-
-Asymptotic theory can be comforting, it's nice to know that the road we are on leads somewhere. However, the key term ``any given set of covariates'' must be restricted for this to be actionable in the finite lifespan of our species. The definition of those covariates comes down to defining the uniformity of nature assumption posed by Hume. If the covariate set is infinite, then we assume nothing regarding the nature of uniformity, and induction is impossible.
-
-How, then, do we define those covariates? Which parts of nature must be uniform and which parts are allowed to change? Our formulation allows us to 
-
-
-This will answer the following practical question for any policy maker attempting to learn from previous studies: how many studies are enough studies? And if the answer to that question depends on where one intends to implement a new policy, then how can one relate the target context to the context of the studies? 
-
-Hotz et al \parencite*{Hotz2005} provide one of the only canonical models in the econometrics literature for extrapolating from a source context with experimental data and measuring predictions in a target context where such data is not available. Their technical methodology follows \cite{Abadie2006}, using matching with replacement from the target to the source domain to create a bootstrapped dataset on which to run a regression. This can be seen as a reinvention of importance estimation (\cite{Shimodaira2000, Suigyama2008}). The implication of this choice of techniques is the assumption of covariate shift. The failure of their technique to work in certain contexts implies a violation of the covariate shift assumptions. 
-
-\cite{Gechter2015} builds on the technique of Hotz to create bounds for prediction in a new domain, using the difference between outcomes for the control groups $P_S(Y|W_0, Z)$ and  $P_T(W_0, Z)$ to create the bounds. 
-
-These methodologies are lacking two ingredients 
-
-A) they do not incorporate a methodology for discovering heterogeneous treatment effects that can be used to re-marginalize the average treatment effects given a different covariate distribution in the target population and B) they do not provide any formal framework for model selection that determines which covariates to condition on and which to marginalize out to enable a transportable prediction.
 
 
 
@@ -339,55 +483,39 @@ A) they do not incorporate a methodology for discovering heterogeneous treatment
 % Problem #1 can be solved with the creation or addition of new variables that proxy the missing variable. Latent feature space, ala Heinze-deml2017
 
 
-% Given a set of interacting covariates, $\rho \subset \mathcal{X}$, one can determine that covariate shift holds when $P_S(\tau | g(\rho)) = P_T(\tau | g(\rho)$, where $g(\cdot)$ is a feature representation function that removes or transforms variables in $\rho$ to obtain an invariant conditional distribution. 
-
-% The development of this feature representation function, $g\cdot)$, that maintains conditional invariance, is the subject of a new line of research in domain adaptation. \cite{Rojas-carulla2018} develops a feature selection algorithm whereby a subset of the features is selected subject to the constrain of independence between the empirical distributions $P_j(Y|g(X))$ be independent of index $j$, where index $j$ is the index of the source domain on which the estimate was made. \cite{Heinze-deml2017} creates a latent representation function $g(\cdot)$ in the form of a convolutional neural network for image processing and adds a regularization term to penalize the variance in $P(Y | g(X))$ across different "style features" (the features which change across domains). 
- 
 
 
+% I will argue that frameworks for discovering heterogeneous treatment effects, such as causal trees (\cite{Athey2016}), must form a part of any methodology that hopes to transfer treatment effects from one domain to another. Following that, I will show that ideas of conditional invariance that can be traced back to mid-century econometrics can motivate the model selection process and that such motivation exists in some recent research in the field of domain adaptation of machine learning (\cite{Rojas-carulla2018}).
 
-% \cite{Peters2015} develop a technique where, given an outcome variable $Y$, and given the assumption that there exists a conditional distribution of that outcome variable that is invariant across domains ($P(Y | X^*, \lambda) = P(Y | X^*)$) for some set of covariates $X^* \in X$, where $X$ is a set of potential covariates that have been measured, one can discover the subset $X^*$ by exploiting the invariance of the conditional distribution. They do this by representing the conditional distribution by a function $g(X)$, parameterizing the function, and looking for a set of invariant parameters across the domains.
+% Banjerjee and Snowberg \parencite*{Snowberg2016} create a formal system of ``speculation'' to create ``falsifiable claims'' of research studies as an attempt to codify the process of generalization and external validity that can be attached to any empirical study from the counterfactual paradigm. The falsifiable claims would presumably be used by other researchers to test the assumptions necessary for external validity of the original findings to hold true.
 
+% (TODO: something on meta-analysis methods -- Meager)
 
-\section{ Current State of the Art in Dealing with External Validity }
-
-
-
-I will argue that frameworks for discovering heterogeneous treatment effects, such as causal trees (\cite{Athey2016}), must form a part of any methodology that hopes to transfer treatment effects from one domain to another. Following that, I will show that ideas of conditional invariance that can be traced back to mid-century econometricians can motivate the model selection process and that such motivation exists in some recent research in the field of domain adaptation of machine learning (\cite{Rojas-carulla2018}).
+% Nancy Cartwright and Jeremy Hardie \parencite*{Cartwright2013} lay out an intuitive, qualitative method for predicting the treatment effect of a policy in your context, given evidence from other contexts. 
 
 
-\cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. In a sense, they provide a checkbox of things that are worth worrying about. Unfortunately, echoing again Manski's (\parencite*{Manski2008} concern, researchers in applied economics have not systematically adopted a system of discussing threats to external validity.
+% \cite{Shadish2002} lay out, along with their taxonomy of validities, a taxonomy of ``threats'' to each type of validity. While not a formal framework, per say, by creating the taxonomy they invite researchers to address each threat in turn. If a researcher is able to argue that all the threats to external validity have been addressed and protected against, then one might consider the work of generalizing to be finished. In a sense, they provide a checkbox of things that are worth worrying about. Unfortunately, echoing again Manski's (\parencite*{Manski2008} concern, researchers in applied economics have not systematically adopted a system of discussing threats to external validity.
 
-GRADE is an example of this type of system applied in healthcare recommendations. It is a system, formalized to bring together expert opinion. It is not a statistical framework that starts from the original data, it starts from PDFs, read and interpreted by humans, and lets them give grades to the evidence based on stated criteria. 
+% GRADE is an example of this type of system applied in healthcare recommendations. It is a system, formalized to bring together expert opinion. It is not a statistical framework that starts from the original data, it starts from PDFs, read and interpreted by humans, and lets them give grades to the evidence based on stated criteria. 
 
-It provides policy recommendation along the guidelines of patient age, setting, and intervention types. 
+% It provides policy recommendation along the guidelines of patient age, setting, and intervention types. 
 
-What is ``high and middle- income country'' -- what happens with countries on the border? this discretization is clearly problematic. But it's a start. 
+% What is ``high and middle- income country'' -- what happens with countries on the border? this discretization is clearly problematic. But it's a start. 
 
 
-Tamil Nadu / Bangladesh
-
-Hock/Imbens - They conduct a test to see whether Y|X is consistent across locations, but this does not say anything about T|X. Indeed, the Y|X they test is linear, thus by assumption all of those variables fall out of the treatment effect and the identification of those variables is not actually important... 
-
-However, if Y|X is consistent in the control, they show that it is also consistent in the treatment, which implies one can compute T|X. By using matching with replacement, they are essentially reweighting the errors by the density ratio of the covariates (show this relation!). 
-
-However if Y|X is not consistent, that shows some other latent variable that is effecting Y. This does not mean the latent variable will effect the treatment, however, it might be additive (as was the assumption with all the other variables!). 
-
-They seem to have found (through some ad-hoc method) that there is treatment effect heterogeneity among those who have previously worked and those you had not previously worked. Thus, they do the entire analysis separately for both of these groups. 
+% Tamil Nadu / Bangladesh
 
 
 
+% Athey and Imbens \parencite*{Athey2017} similarly reflect on the recent concerns over external validity quoted previously by the likes of Manski, Deaton, and Heckman. In an article aptly titled \textit{The State of Applied Econometrics: Causality and Policy Evaluation}, they lay out three main recent advances in addressing external validity.
 
+% The first advance is that of addressing the concerns about the Local Average Treatment Effect (LATE) measured by instrumental variables (IV) (...). The concerns relate to the generalization of the local effect caused by the variation in the instrument, to the global effect on the entire population (who were potentially not touched by the variation in the instrument in the study).
 
-Athey and Imbens \parencite*{Athey2017} similarly reflect on the recent concerns over external validity quoted previously by the likes of Manski, Deaton, and Heckman. In an article aptly titled \textit{The State of Applied Econometrics: Causality and Policy Evaluation}, they lay out three main recent advances in addressing external validity.
+% The second advance is that of addressing concerns regarding the local nature of regression discontinuity designs (...). These techniques all involve various methods to test whether the effect is only present locally at the discontinuity, or whether the effect is likely to extend to the rest of the sample.
 
-The first advance is that of addressing the concerns about the Local Average Treatment Effect (LATE) measured by instrumental variables (IV) (...). The concerns relate to the generalization of the local effect caused by the variation in the instrument, to the global effect on the entire population (who were potentially not touched by the variation in the instrument in the study).
+% Both of these techniques can be thought of addressing ``statistical validity'' in the validity taxonomy of Shadish, Cook, and Campbell, that of drawing inferences to the population from the sample. They do not address construct or external validity, they do not provide any information to the policy maker who is considering making a decision in another context.
 
-The second advance is that of addressing concerns regarding the local nature of regression discontinuity designs (...). These techniques all involve various methods to test whether the effect is only present locally at the discontinuity, or whether the effect is likely to extend to the rest of the sample.
-
-Both of these techniques can be thought of addressing ``statistical validity'' in the validity taxonomy of Shadish, Cook, and Campbell, that of drawing inferences to the population from the sample. They do not address construct or external validity, they do not provide any information to the policy maker who is considering making a decision in another context.
-
-The third advance is more salient to the major thrust of external validity: that of combining observational and experimental results.
+% The third advance is more salient to the major thrust of external validity: that of combining observational and experimental results.
 
 
 
@@ -398,11 +526,7 @@ The third advance is more salient to the major thrust of external validity: that
 
 
 
-Banjerjee and Snowberg \parencite*{Snowberg2016} create a formal system of ``speculation'' to create ``falsifiable claims'' of research studies as an attempt to codify the process of generalization and external validity that can be attached to any empirical study from the counterfactual paradigm. The falsifiable claims would presumably be used by other researchers to test the assumptions necessary for external validity of the original findings to hold true.
 
-(TODO: something on meta-analysis methods -- Meager)
-
-Nancy Cartwright and Jeremy Hardie \parencite*{Cartwright2013} lay out an intuitive, qualitative method for predicting the treatment effect of a policy in your context, given evidence from other contexts. 
 
 
 % The most obvious alternative to the treatment effect approach, which addresses the problem of external validity, is that of structural economics (\cite{Heckman2008}).
@@ -420,23 +544,25 @@ Nancy Cartwright and Jeremy Hardie \parencite*{Cartwright2013} lay out an intuit
 % Others have proposed methods for ``augmenting'' counterfactual anaylisis to take external validity into account.
 
 
+\section{Conclusions}
+
+Banerjee and Duflo \parencite*{Banerjee2014} discuss concerns to experimental validity and generalization. As a primary tool to address external validity of RCTs, they emphasize the need for replication studies. Indeed, they posit what can be thought of as asymptotic theory of domain adaptation for RCTs:
+
+\begin{displayquote}
+``If we were prepared to carry out enough experiments in varied enough locations, we could learn as much as we want to know about the distribution of the treatment effects across sites conditional on any given set of covariates.''
+\end{displayquote}
+
+Asymptotic theory can be comforting, it's nice to know that the road we are on leads somewhere. However, the key term ``any given set of covariates'' must be restricted for this to be actionable in the finite lifespan of our species. The definition of those covariates comes down to defining the uniformity of nature assumption posed by Hume. If the covariate set is infinite, then we assume nothing regarding the nature of uniformity, and induction is impossible.
+
+How, then, do we define those covariates? Which parts of nature must be uniform and which parts are allowed to change? 
+
+I hope it is clear from the previous analysis that 
+
+This will answer the following practical question for any policy maker attempting to learn from previous studies: how many studies are enough studies? And if the answer to that question depends on where one intends to implement a new policy, then how can one relate the target context to the context of the studies? 
 
 
-\section{Invariance in Domain Adaptation}
 
-
-
-% \cite{Rojas-carulla2018} propose a similar idea, but modify it in two ways which we will follow:
-
-% \begin{enumerate}
-% \item They use the formulation of Domain Adaptation to frame the problem and measure the effectiveness of their technique.
-% \item They consider the invariance of the conditional to it's domain through an independence test between the conditional distribution and the index label of the domain: $P(Y | X^*, \lambda) = P(Y | X^*)$. Where $\lambda \in \{1,2,\ldots,S \}$ for $S$ source domains.
-% \end{enumerate}
-
-
-\section{Conclusions and Future Research}
-
-
+As defined by Engle \parencite*{Engle1983}, weak exogoneity is a necessary condition for super exogoneity. This connection is exploited by \cite{Zhang2015}, where the lack of weak exogoneity is used to determine the causal direction in the case of two correlated, un-confounded variables. Zhang's method points to the possibility of tests that exclude the assumptions of covariate shift with data from only a single domain. In other words, a general testing framework that works without testing directly for super exogoneity, which requires proving the invariance of the conditional distribution $P(Y|Z)$ against all arbitrary manipulations of the marginal $P(Z)$. 
 
 
 
@@ -446,12 +572,9 @@ What went wrong? Should the policy makers in New York simply have known that Mex
 
 The purpose of this article was to argue that each of these cases is wrong: 
 
-\begin{enumerate}
-\item Generalization, causal mechanisms, structure, support factors, etc. are all relative to a set of changes to which they must be invariant. One cannot answer the question about external validity without information about the differences between the source and target contexts. 
+Firstly, generalization, causal mechanisms, structure, support factors, etc. are all relative to a set of changes to which they must be invariant. One cannot answer the question about external validity without information about the differences between the source and target contexts. 
 
-\item The difference between New York and Mexico must be measured over a well-defined covariate space in order to make sense of the question of whether it is ``too different.'' A core part of applied economics research must, therefore, consist of determining, for a given intervention, what part of nature must be uniform, what makes up the super-structure, what are the support factors that will change, or similarly, what are the invariant mechanisms. New research from machine learning has shown that the discovery of invariant mechanisms, given muti-domain datasets, is feasible and allows for effective predictions in new domains. Thus, while the data requirement has gone up (more than one study is required to make a prediction in a new context without many further assumptions), the ability to give a formal answer to the question of whether it will probably work in New York or whether one has no idea is within our reach and should be pursued. 
-\end{enumerate}
-
+Secondly, the difference between New York and Mexico must be measured over a well-defined covariate space in order to make sense of the question of whether it is ``too different.'' A core part of applied economics research must, therefore, consist of determining, for a given intervention, what part of nature must be uniform, what makes up the super-structure, what are the support factors that will change, or similarly, what are the invariant mechanisms. New research from machine learning has shown that the discovery of invariant mechanisms, given muti-domain datasets, is feasible and allows for effective predictions in new domains. Thus, while the data requirement has gone up (more than one study is required to make a prediction in a new context without many further assumptions), the ability to give a formal answer to the question of whether it will probably work in New York or whether one has no idea is within our reach and should be pursued. 
 
 
 
@@ -563,7 +686,7 @@ The purpose of this article was to argue that each of these cases is wrong:
 
 
 
-% heinz-deml proposes a similar solution to the problem of domain adaptation in image recognition. Using a series of images in which the same individual, with the same causal characteristics, is captured across multiple domains where orthogonal changes take place. A regularization term is added to the optimization problem of the neural network trained on the source domains. The term penalizes the conditional variance...
+
 
 % Much of the domain adaptation literature from machine learning focuses on the case where covariate shift holds. Covariate shift describes the situation where $P(Y|X)$ is assumed to be consistent and $P(X)$ is changing across domains. As we are in the situation of discovering the $x \in X$ which is causal for $Y$, we cannot simply make that assumption. Many of the techniques in domain adaptation, however, are developed for situations in which the model is learned on a latent space, thus the reweighting of $X$ consists of a transformation and checking of distributional differences between source domains. One technique for minimizing distances between distributions is that of minimizing the Wasserstein distance. This distance measure has grown in popularity recently due to it's advantageous qualities for optimization: it maintains a gradient even when distributions lack mutual positive support. Thus, the gradient is computable even when distributions are very different from one another.
 
