@@ -220,19 +220,28 @@ author = {Heinze-Deml, Christina and Maathuis, Marloes H. and Meinshausen, Nicol
 doi = {10.1146/annurev-statistics-031017-100630},
 eprint = {arXiv:1706.09141v1},
 file = {:home/nandan/Dropbox/Research/Random Papers to Read/1706.09141.pdf:pdf},
-journal = {Ssrn},
+issn = {2326-8298},
+journal = {Annual Review of Statistics and Its Application},
+month = {mar},
+number = {1},
+pages = {371--391},
 title = {{Causal Structure Learning}},
+url = {http://www.annualreviews.org/doi/10.1146/annurev-statistics-031017-100630},
+volume = {5},
 year = {2018}
 }
 @article{Heinze-deml2017,
+abstract = {When training a deep neural network for image classification, one can broadly distinguish between two types of latent features of images that will drive the classification. We can divide latent features into (i) "core" or "conditionally invariant" features {\$}X{\^{}}\backslashtext{\{}core{\}}{\$} whose distribution {\$}X{\^{}}\backslashtext{\{}core{\}}\backslashvert Y{\$}, conditional on the class {\$}Y{\$}, does not change substantially across domains and (ii) "style" features {\$}X{\^{}}{\{}\backslashtext{\{}style{\}}{\}}{\$} whose distribution {\$}X{\^{}}{\{}\backslashtext{\{}style{\}}{\}} \backslashvert Y{\$} can change substantially across domains. Examples for style features include position, rotation, image quality or brightness but also more complex ones like hair color, image quality or posture for images of persons. Our goal is to minimize a loss that is robust under changes in the distribution of these style features. In contrast to previous work, we assume that the domain itself is not observed and hence a latent variable. We do assume that we can sometimes observe a typically discrete identifier or "{\$}\backslashmathrm{\{}ID{\}}{\$} variable". In some applications we know, for example, that two images show the same person, and {\$}\backslashmathrm{\{}ID{\}}{\$} then refers to the identity of the person. The proposed method requires only a small fraction of images to have {\$}\backslashmathrm{\{}ID{\}}{\$} information. We group observations if they share the same class and identifier {\$}(Y,\backslashmathrm{\{}ID{\}})=(y,\backslashmathrm{\{}id{\}}){\$} and penalize the conditional variance of the prediction or the loss if we condition on {\$}(Y,\backslashmathrm{\{}ID{\}}){\$}. Using a causal framework, this conditional variance regularization (CoRe) is shown to protect asymptotically against shifts in the distribution of the style variables. Empirically, we show that the CoRe penalty improves predictive accuracy substantially in settings where domain changes occur in terms of image quality, brightness and color while we also look at more complex changes such as changes in movement and posture.},
 archivePrefix = {arXiv},
-arxivId = {arXiv:1710.11469v5},
-author = {Heinze-deml, Christina and Meinshausen, Nicolai},
-eprint = {arXiv:1710.11469v5},
+arxivId = {1710.11469},
+author = {Heinze-Deml, Christina and Meinshausen, Nicolai},
+eprint = {1710.11469},
 file = {:home/nandan/Dropbox/Research/Random Papers to Read/1710.11469.pdf:pdf},
 keywords = {anti-,causal models,causal prediction,dataset shift,distributional robustness,domain shift,image classification},
+month = {oct},
 number = {2009},
 title = {{Conditional Variance Penalties and Domain Shift Robustness}},
+url = {http://arxiv.org/abs/1710.11469},
 year = {2017}
 }
 @article{Holland1986,
@@ -408,11 +417,14 @@ url = {file:///tmp/mozilla{\_}kuebler0/11283.pdf{\%}0Ahttps://books.google.com/b
 year = {2017}
 }
 @article{Rojas-carulla2018,
-author = {Rojas-Carulla, Mateo and Sch{\"{o}}lkopf, Bernhard and Turner, Richard},
+abstract = {Methods of transfer learning try to combine knowledge from several related tasks (or domains) to improve performance on a test task. Inspired by causal methodology, we relax the usual covariate shift assumption and assume that it holds true for a subset of predictor variables: the conditional distribution of the target variable given this subset of predictors is invariant over all tasks. We show how this assumption can be motivated from ideas in the field of causality. We focus on the problem of Domain Generalization, in which no examples from the test task are observed. We prove that in an adversarial setting using this subset for prediction is optimal in Domain Generalization; we further provide examples, in which the tasks are sufficiently diverse and the estimator therefore outperforms pooling the data, even on average. If examples from the test task are available, we also provide a method to transfer knowledge from the training tasks and exploit all available features for prediction. However, we provide no guarantees for this method. We introduce a practical method which allows for automatic inference of the above subset and provide corresponding code. We present results on synthetic data sets and a gene deletion data set.},
+author = {Rojas-Carulla, Mateo and Sch{\"{o}}lkopf, Bernhard and Turner, Richard and Peters, Jonas},
 file = {:home/nandan/Dropbox/Research/Random Papers to Read/16-432.pdf:pdf},
-keywords = {causality,do-,domain adaptation,main generalization,multi-task learning,transfer learning},
+issn = {15337928},
+journal = {Journal of Machine Learning Research},
+keywords = {Causality,Domain adaptation,Domain generalization,Multi-task learning,Transfer learning},
 pages = {1--34},
-title = {{Invariant Models for Causal Transfer Learning}},
+title = {{Invariant models for causal transfer learning}},
 volume = {19},
 year = {2018}
 }
