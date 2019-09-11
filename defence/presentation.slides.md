@@ -1,46 +1,56 @@
 ---
 toc: true
 toc-title: Outline
-title: External Validity
+title: "Policy Prediction: The Missing Tool in Experimental Econometrics and a Roadmap to Fix It"
 author: Nandan Rao
 date: September, 2019
-bibliography: ../external-validity.bib
+bibliography: ../bibs/master/master.bib
 ---
 
 # Introduction
 
+## Takeaway
+
+Causal indentification is not sufficient for transportability and for policy prediction.
 
 ## The Randomista Fight
 
-- Experimental and quasi-experimental methods have become the standard, with RCTs as the gold standard.
+- Experimental and quasi-experimental methods have become the standard, with RCTs as the gold standard. Including for "evidence-based research."
 
 - Indentification police!
 
-- Many prominent econometricians have rasied the alarm about this obsession. @Heckman2008, @Manski2013, @Deaton2010, @Deaton2018
+- Many prominent econometricians have rasied concerns that such methods tend to be especially difficult to generalize. @Heckman2008, @Manski2013, @Deaton2010, @Deaton2018
 
 
-## Applied Research
+## Policy Decisions
 
-- If applied research is to be applied, it needs to be applicable.
+- Evidence-based policy decision making is an act of extrapolation: from evidence to future effects of a policy.
 
-- This means external validity. @Manski2013
+- Experimental studies tend to be silent on the question of external validity. @Manski2013
 
-- Experiments, identification, etc. focus on internal validity (we will define this well later).
+- Few tools exist to prove the same results will apply elsewhere.
 
-- A plethory of new studies show that experiments don't generalize. @LantPritchet&JustinSandefur2016, @Gechter2015, @Allcott2015, @Bisbee2017, @Rosenzweig2019
+- Few tools exist to predict the results in a specific elsewhere, given "evidence" from past studies.
 
-
-## This work
-
-
-How did we get here and where can we go?
+- Small but growing literature, showing RCTs whose results fail to extrapolate, underlines the need for such tools. @Pritchett2016, @Allcott2015, @Bisbee2017, @Rosenzweig2019
 
 
+## Prediction is Prediction
+
+- Machine learning is good at prediction.
+
+- Domain adaptation formalizes the problem of moving from one domain, with labeled data, to another domain with unlabeled data.
+
+- The formulation fits!
+
+- I will show why this is needed and...
 
 
-# External Validity and Scientific Inference
 
 
+
+
+# Validity and Counterfactual Identification
 
 ## Taxonomy of validities [^1]
 
@@ -71,7 +81,6 @@ All men are mortal
 Socrates is a man
 
 Therefore, Socrates is mortal
-
 
 
 ## Hume's Problem of Induction
@@ -144,26 +153,222 @@ In the framework of scientific inference, this amounts to reasoning from particu
 - Does such a framework exist?
 
 
-# Current State of the Art in Economics
-
-## Shadish, Cook, and Campbell
-
-
-## Replication Studies
-
-
-## The State of Applied Econometrics [^athey]
-
-
-[^athey]: @Athey2017
-
-## Structural Models
-
-This is an obvious choice. What problems exist?
-
-
 # The Origins of Structure
 
-## foo
+- Economists were thinking of very different problems than Fisher: changes in behavioral patterns of individuals and groups.
 
-# Invariant Conditionals
+- Certain relations might be more or less "autonomous" to certain changes. These relations form an invariant super-structure to the system. @Frisch1995 @Haavelmo1944
+
+- Following Hume, nature must be uniform (invariant) in some way in order to generate inferences to be used in new times and places.
+
+- ``The most important point is that the concept of structure is relative to the domain of modifications anticipated.'' - @Hurwicz1966
+
+
+## Super Exogoneity[^engle]
+
+Let $\lambda_1, \lambda_2 \in \lambda$ be "structural" parameters of a model.
+
+If the joint density implied by the model can be factorized as follows:
+
+$$
+P(y, z, \lambda) = P(y | z, \lambda_1)P(z | \lambda_2)
+$$
+
+and $\lambda_2$ is independent of the structural parameter of interest $\lambda_1$, then the variable $z$ is said to be weakly exogenous to $\lambda_1$.
+
+If, additionally, the conditional distribution, $P(y | z, \lambda_1)$ remains invariant to changes in the marginal $p(z)$, then $z$ is super exogenous.
+
+[^engle]:@Engle1983
+
+## Modern Extensions of Structural Invariance
+
+- Continuation of this line of thought has taken place in the statistics and machine learning literature rather than that of econometrics.
+
+- Many researchers have related Engle's super exogoneity to causality and worked in the reverse fashion, looking for invariant conditionals acrosss multiple datasets and from their inferring causal relationships (@Peters2015, @Heinze-deml2017, @Rojas-carulla2018)
+
+- @Zhang2015 directly addresses Engle's taxonomy and looks for weak exogoneity as a necessary condition to super exogoneity, thus being able to sometimes identify causal direction in the two variable case.
+
+
+# Domain Adaptation
+
+## Setup for Transfer Learning
+
+Consider a domain, $\D$, which we define as consisting of a feature space, $\mathcal{X}$, and a marginal distribution $P(X)$ where $X = \{x_1,\ldots,x_n\} \in \mathcal{X}$. A task, $\mathcal{T}$, consists of an outcome space, $\mathcal{Y}$ and a true generating mechanism $f: \mathcal{X} \rightarrow \mathcal{Y}$.
+
+Transfer learning is any problem where the task or domain changes between training and prediction.
+
+## Setup for Domain Adaptation
+
+As in @Ben-David2006 @Pan2010:
+
+$\mathcal{T}$ is constant and the feature space, $\mathcal{X}$ is the same across all domains. There is a target domain, $\D_T$ from which one has samples $\{x_1,\ldots,x_n\} \in X$ and (one or more) source domain(s), $\D_S$, from which one has paired samples $\{(y_1, x_1),\dots,(y_n, x_n)\} \in (\mathcal{Y}, \mathcal{X})$.
+
+
+## Setup for Treatment Effect Experiments
+
+Allow $\mathcal{X} = \{\mathcal{W}, \mathcal{Z}\}$, where $\mathcal{W} = \{W_0, W_1\}$ a binary treatment and $\mathcal{Z} = {Z_1,\ldots,Z_P}$ a set of covariates.
+
+Construct validity of treatment and covariates implies consistency of feature space.
+
+
+
+## Covariate Shift Assumption
+
+Tasks consistency implies $P_S(Y | X) = P_T(Y | X)$.
+
+This is the "covariate shift" assumption:
+
+$P_S(X) \neq P_T(X)$
+
+
+## Importance Estimation
+
+@Shimodaira2000 shows that the optimum likelihood function for a maximum likelihood estimator of $P_T(Y | X)$, given sufficiently large sample size, is obtained by weighting: $w(x) = \frac{P_T(x)}{P_S(x)}$
+
+The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance}) has led to many other importance estimation techniques to deal with covariate shift. @Suigyama2007 @Pan2010
+
+**GOAL**: Formulate policy prediction problems such that the covariate shift assumption holds.
+
+
+## Domain Adaptation in Econometrics
+
+- Sample selection bias[^manski]: The fundamental statistical problem is the same and solutions related to importance estimation for solving covariate shift.
+
+- Structural economics has always claimed external validity: if the assumptions hold anywhere, they hold everywhere!
+
+- While interesting, I'm not engaging with structural economics here.
+
+[^manski]:@Manski1977
+
+## @Hotz2005
+
+- One of the only canonical models in the experimental econometrics literature for extrapolating from a source context with experimental data and measuring predictions in a target context.
+
+- Method uses matching with replacement from @Abadie2006, running regression on bootstrapped source domain. Statistically, this can be seen as a form of importance estimation.
+
+- They separate into two groups due to predetermined treatment heterogeneity. They try adding personal covariates to no avail. They relate t-tests in treatment and control distributions.
+
+- @Gechter2015 extends this idea of a t-test on the control group and creates bounds.
+
+## Goals
+
+1. A theoretical justification for the technique in terms of the assumptions involved, related to observable and unobservable variables, that may or may not fail in practice.
+
+2. A formal framework for model selection that determines which covariates to condition on and which to marginalize out to enable a transportable prediction.
+
+3. A focus on treatment effects rather than outcomes.
+
+
+## Exogoneity and Covariate Shift - Motivation
+
+- I would like to make explicit the relationship between super exogoneity and the covariate shift assumption for a model $P(Y|Z)$.
+
+- This follows from more comprehensive proofs of transportability of @Pearl2014.
+
+## Exogoneity and Covariate Shift - Setup
+
+Consider a source domain, $\D_S$ and a target domain $\D_T$, with feature space defined as $\mathcal{X} = \mathcal{Z} \cup \mathcal{H}$. $Z \in \mathcal{Z}$ is a set of observable covariates, where $P_S(Z) \neq P_T(Z)$, and $H \in \mathcal{H}$ a set of unobservable covariates.
+
+## Exogoneity and Covariate Shift - proposition {.allowframebreaks}
+
+\begin{prop}
+  The covariate shift assumption may be violated for $P(Y|Z)$ if the variable set $Z$ is not super exogenous.
+\end{prop}
+
+\begin{proof}
+  This follows directly from the definition of super exogoneity: a failure of super exogoneity implies that the conditional distribution $P(Y|Z)$ is not invariant to changes in $P(Z)$, which implies that, potentially, $P_T(Y|Z) \neq P_S(Y|Z)$ given the assumption that $P_S(Z) \neq P_T(Z)$.
+\end{proof}
+
+\framebreak
+
+\begin{prop}
+  The covariate shift assumption holds for $P(Y|Z)$ if the variable set $Z$ is super exogenous and $P_S(Y|Z, H) = P_S(Y | Z)$.
+\end{prop}
+
+\begin{proof}
+As $Z$ and $H$ encompass all variables and are thus the only possible changes across domains, this follows directly from super exogoneity of $Z$, $P_S(Y|Z, H) = P_S(Y | Z) = P_T(Y | Z)$.
+\end{proof}
+
+\framebreak
+
+\begin{prop}
+  The covariate shift assumption holds for $P(Y|Z)$ if the variable set $\{ Z \cup H \}$ is super exogenous and $P_S(H|Z) = P_T(H|Z)$.
+\end{prop}
+
+\begin{proof}
+  Super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H|Z) dH = \int P_T(Y|Z,H)P_T(H|Z) dH = P_T(Y|Z)$.
+\end{proof}
+
+\framebreak
+
+\begin{prop}
+  The covariate shift assumption holds for $P(Y|Z)$ if the variable set $\{ Z \cup H \}$ is super exogenous and $P_S(H|Z) = P_S(H) = P_T(H) = P_T(H|Z)$.
+\end{prop}
+
+\begin{proof}
+  Super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H) dH = \int P_T(Y|Z,H)P_T(H) dH = P_T(Y|Z)$.
+\end{proof}
+
+## Example - Microcredit[^microcredits]
+
+
+- All published in 2015.
+
+- Mexico, Mongolia, India, Bosnia and Herzegovina, Ethiopia, Morocco.
+
+- Used as dataset to examine external validity by @Pritchett2016 @Meager2018
+
+[^microcredits]: @Attanasio2015, @Angelucci2015, @Augsburg2015, @Banerjee2015, @Crepon2015, @Tarozzi2015.
+
+
+## Microcredit setup
+
+- We assume the feature space is the same (may not be!).
+
+- Assume an unobservable: "Shumpeterianness". Call this $H$.
+
+- Assume a set of proxies for Shumpeterianness, $Z_2$ - observables that are assumed to be _caused_ by $H$.
+
+- $Z_2$ does not directly affect outcome, all correlation through $H$.
+
+## Microcredit - threats to covariate shift
+
+Threats are related to whether the following two facts hold:
+
+1. $P_S(H) = P_T(H)$
+2. $P_S(H|Z_2) = P_T(H|Z_2)$
+
+The goal is to show that any method of model transportability needs to search over covariates to find the transportable model, which depends on these assumptions.
+
+## Microcredit - Proofs of covariate shit {.allowframebreaks}
+
+$P_S(H) = P_T(H)$ and $P_S(H|Z_2) \neq P_T(H|Z_2)$
+
+In this case, $P_S(Y|W) = \int P_S(Y|W,H)P_S(H) dH = P_T(Y|W)$, thus the invariant condition is given by $P(Y|W)$. In contrast, $P(Y|W,Z_2)$ will not be invariant: $P_S(Y|W,Z_2) = \int P_S(Y|W,H,Z_2)P_S(H|Z_2) dH \neq P_T(Y|W,Z_2)$.
+
+\framebreak
+
+$P_S(H) \neq P_T(H)$ and $P_S(H|Z_2) = P_T(H|Z_2)$
+
+This will provide an outcome that is the reverse of the above: $P_S(Y|W,Z_2) = \int P_S(Y|W,H,Z_2)P_S(H|Z_2) dH = P_T(Y|W,Z_2)$, thus the invariant condition is given by $P(Y|W,Z_2)$. In contrast, $P(Y|W)$ will not be invariant: $P_S(Y|W) = \int P_S(Y|W,H,Z_2)P_S(H) dH \neq P_T(Y|W)$.
+
+\framebreak
+
+$P_S(H) = P_T(H)$ and $P_S(H|Z_2) = P_T(H|Z_2)$
+
+In this case, both the conditionals will be invariant, the proof is the same as above.
+
+$P_S(H) \neq P_T(H)$ and $P_S(H|Z_2) \neq P_T(H|Z_2)$
+
+In this case, neither of the conditionals will be invariant, the proof being again the same as above.
+
+
+
+# Conclusions
+
+foo
+
+
+# References
+
+## References{.allowframebreaks}
