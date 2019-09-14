@@ -13,6 +13,11 @@ bibliography: ../bibs/master/master.bib
 
 Causal indentification is not sufficient for transportability and for policy prediction.
 
+## U.S. Department of Education
+
+![](./doe-1.png){height=350px}
+
+
 ## The Randomista Fight
 
 - Experimental and quasi-experimental methods have become the standard, with RCTs as the gold standard. Including for "evidence-based research."
@@ -46,10 +51,6 @@ Causal indentification is not sufficient for transportability and for policy pre
 - I will show why this is needed and...
 
 
-
-
-
-
 # Validity and Counterfactual Identification
 
 ## Taxonomy of validities [^1]
@@ -64,29 +65,19 @@ Causal indentification is not sufficient for transportability and for policy pre
 
 [^1]: @Shadish2002
 
-
 ## What is inference?
 
 Inference is the process of reasoning and can be broken into two parts:
 
-1. Reasoning from particulars to generals (induction)
+1. Reasoning from particulars to generals (induction).
 
 2. Reasoning from generals to particulars (deduction).
 
-
-## Syllogisms
-
-All men are mortal
-
-Socrates is a man
-
-Therefore, Socrates is mortal
-
+Nineteenth century economists saw mathematics as a tool for deduction and statistics as a tool for induction. @Morgan1991
 
 ## Hume's Problem of Induction
 
-> "As to past Experience, it can be allowed to give direct and certain information of those precise objects only, and that precise period of time, which fell under its cognizance: but why this experience should be extended to future times, and to other objects, which for aught we know, may be only in appearance similar, this is the main question on which I would insist"
-
+> "As to past Experience, it can be allowed to give direct and certain information of those precise objects only, and that precise period of time, which fell under its cognizance: but why this experience should be extended to future times, and to other objects, which for aught we know, may be only in appearance similar, this is the main question on which I would insist" -- @hume1748
 
 ## The Design of Experiments
 
@@ -118,7 +109,6 @@ Therefore, Socrates is mortal
 
 [^2]: @Heckman2008
 
-
 ## Agriculture and Medecine
 
 - When contexts can be reproduced, when the population that is sampled from is the same population on which one will infer conclusions, then the "effects of a cause" is exactly the right question.
@@ -126,7 +116,6 @@ Therefore, Socrates is mortal
 - In Fisher's context, this was the case. The context for growing corn can be replicated, because one knows the system is encapsulated: sunlight and soil.
 
 - Economics is not like this. Social sciences are different. This is why Shadish, Cook, and Campbell go to such lengths to enumerat threats to external validity.
-
 
 
 # The Danger of Informal Inference
@@ -362,12 +351,86 @@ $P_S(H) \neq P_T(H)$ and $P_S(H|Z_2) \neq P_T(H|Z_2)$
 
 In this case, neither of the conditionals will be invariant, the proof being again the same as above.
 
+## Problems
+
+- $P(H)$ is not observed!
+
+- Existence of $H_2$?
+
+## Solutions
+
+- Collect labeled data from more than one domain.
+
+- Let $g: \mathcal{Z} \rightarrow \mathbb{R}^D$ be a representation function that either selects variables or transforms them.
+
+- Check invariance of all possible predictive conditionals, $P(Y|g(Z))$, directly. @Rojas-carulla2018
+
+- Conversely, learn $g(\cdot)$ to maximize predictive power subject to a penalty on invariance. @Heinze-deml2017
+
+## @Rojas-carulla2018
+
+- Perform an independence test between the residuals of a parametric model for the output and the index label of the domain: $P(Y - f(X^*, S)) = P(Y - f(X^*))$, where $S = \{1,2,\ldots,K \}$ for $K$ source domains.
+
+- They use a $\alpha$ level constraint on that independence test to look for a subset of the features $X^* \in X$ for which conditional invariance holds.
+
+## @Heinze-deml2017
+
+
+- Image recognition context. Uses a series of images in which the same individual, with the same causal characteristics, is captured across multiple domains subject to shifts in orthogonal features.
+
+- A regularization term is added to the optimization problem of the neural network trained on the source domains. The term penalizes the conditional variance of the prediction $\mathbb{V}\big[ \hat{Y}| g(X) \big]$ for feature representation function $g(\cdot)$ applied to features where the ``causal characteristics'' are known to be the same.
+
+- Through the regularization, the function $g(\cdot)$ learns a representation for which the conditional distribution of the outcome is invariant across domains.
+
+## Treatment Effects - Setup
+
+Let $Z = \{ Z_1, Z_2 \}$ the set of observed covariates,  $H = \{ H_1, H_2 \}$ the set of unobserved covariates, and $W \in \{ W_0, W_1 \}$ a binary treatment variable.
+
+If the outcome is linearly separable, such that:
+$$
+Y(W,Z,H) = f_t(W,Z_1,H_1) + f_e(Z_1, Z_2, H_1, H_2)
+$$
+
+Then the conditional average treatment effect, $\tau(z)$ is parameterized only by $z_1$ and $h_1$::
+$$
+\tau(z, h) = \mathbb{E} \big[ Y(W_0, Z, H) - Y(W_1, Z, H) | Z = z, H = h \big] = \tau(z_1, h_1)
+$$
+
+## Treatment Effects - Benefits
+
+- Weakly fewer variables.
+
+- The correct question for the policy decision making.
+
+## Treatment Effects - Complications
+
+- $\tau_i$ not observed.
+
+- Estimating quantiles not straight forward, subject to additional assumptions. @Firpo2007
+
+- Needs a framework to find heterogeneous treatment effects in a disciplined way (select $Z_1$ from $Z$). @Athey2016
+
+
+## Proposal
+
+Predict the effect of a policy, $W$, on a new domain $\D_T$, given conditional treatment effect distributions, $P_1(\tau | g(Z_1)),\ldots, P_S(\tau | g(Z_1))$, from source domains $\D_S$ and a learned feature representation function $g(\cdot)$ that enforces conditional invariance such that the covariance shift assumption holds and importance estimation methods can be used to predict effects on a target population.
 
 
 # Conclusions
 
-foo
+## Asymptotic Theory for Experiments
 
+>If we were prepared to carry out enough experiments in varied enough locations, we could learn as much as we want to know about the distribution of the treatment effects across sites conditional on any given set of covariates.'' -- @Banerjee2014
+
+- If the set of covariates in ``any given set of covariates'' is infinite, we are assuming that nature is not uniform in any way and induction is impossible.
+
+- Then, which covariates?
+
+## Research Agenda
+
+1. If the covariate shift assumption holds, importance estimation techniques can be used to predict in new contexts given data in a previous one.
+2. In the face of unobservables, the covariate shift assumption must be proven to hold empirically by using labeled data from multiple contexts.
+3. If that labeled data is experimental, it can be reasonable to estimate directly the treatment effect, potentially reducing the feature space and increasing the possibility of transportability.
 
 # References
 
