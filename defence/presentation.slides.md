@@ -179,8 +179,8 @@ If, additionally, the conditional distribution, $P(y | z, \lambda_1)$ remains in
 
 
 # Domain Adaptation
-#
-# Setup for Transfer Learning
+
+## Setup for Transfer Learning
 
 Consider a domain, $\D$, which we define as consisting of a feature space, $\mathcal{X}$, and a marginal distribution $P(X)$ where $X = \{x_1,\ldots,x_n\} \in \mathcal{X}$. A task, $\mathcal{T}$, consists of an outcome space, $\mathcal{Y}$ and a true generating mechanism $f: \mathcal{X} \rightarrow \mathcal{Y}$.
 
