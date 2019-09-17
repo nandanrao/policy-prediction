@@ -9,9 +9,10 @@ bibliography: ../bibs/master/master.bib
 
 # Introduction
 
-## Takeaway
+## Takeaways
 
-Causal indentification is not sufficient for transportability and for policy prediction.
+1. Causal indentification is not sufficient to predict a treatment effect in a new context.
+2. Machine learning can help.
 
 ## U.S. Department of Education
 
@@ -48,7 +49,6 @@ Causal indentification is not sufficient for transportability and for policy pre
 
 - The formulation fits!
 
-- I will show why this is needed and...
 
 
 # Validity and Counterfactual Identification
@@ -179,8 +179,8 @@ If, additionally, the conditional distribution, $P(y | z, \lambda_1)$ remains in
 
 
 # Domain Adaptation
-
-## Setup for Transfer Learning
+#
+# Setup for Transfer Learning
 
 Consider a domain, $\D$, which we define as consisting of a feature space, $\mathcal{X}$, and a marginal distribution $P(X)$ where $X = \{x_1,\ldots,x_n\} \in \mathcal{X}$. A task, $\mathcal{T}$, consists of an outcome space, $\mathcal{Y}$ and a true generating mechanism $f: \mathcal{X} \rightarrow \mathcal{Y}$.
 
@@ -233,7 +233,7 @@ The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance})
 
 - One of the only canonical models in the experimental econometrics literature for extrapolating from a source context with experimental data and measuring predictions in a target context.
 
-- Method uses matching with replacement from @Abadie2006, running regression on bootstrapped source domain. Statistically, this can be seen as a form of importance estimation.
+- Method uses matching with replacement from @Abadie2006, running regression on matched source domain data with replacement. Statistically, this can be seen as a form of importance estimation.
 
 - They separate into two groups due to predetermined treatment heterogeneity. They try adding personal covariates to no avail. They relate t-tests in treatment and control distributions.
 
@@ -256,12 +256,12 @@ The use of this weighting ratio, $w(x)$ (referred to as the \textit{importance})
 
 ## Exogoneity and Covariate Shift - Setup
 
-Consider a source domain, $\D_S$ and a target domain $\D_T$, with feature space defined as $\mathcal{X} = \mathcal{Z} \cup \mathcal{H}$. $Z \in \mathcal{Z}$ is a set of observable covariates, where $P_S(Z) \neq P_T(Z)$, and $H \in \mathcal{H}$ a set of unobservable covariates.
+Consider a source domain, $\D_S$ and a target domain $\D_T$, with feature space defined as $\mathcal{X} = \mathcal{Z} \cup \mathcal{H}$. $Z \in \mathcal{Z}$ is a set of observable covariates, where $P_S(Z) \neq P_T(Z)$, and $H \in \mathcal{H}$ a set of unobservable covariates. $\mathcal{T} = {\mathcal{Y}, f}$, where $f: \mathcal{H}, \mathcal{Z} \rightarrow \mathcal{Y}$.
 
 ## Exogoneity and Covariate Shift - proposition {.allowframebreaks}
 
 \begin{prop}
-  The covariate shift assumption may be violated for $P(Y|Z)$ if the variable set $Z$ is not super exogenous.
+  The covariate shift assumption may be violated for $P(Y|Z)$ if the variable set $Z$ ($H$) is not super exogenous.
 \end{prop}
 
 \begin{proof}
@@ -275,7 +275,7 @@ Consider a source domain, $\D_S$ and a target domain $\D_T$, with feature space 
 \end{prop}
 
 \begin{proof}
-As $Z$ and $H$ encompass all variables and are thus the only possible changes across domains, this follows directly from super exogoneity of $Z$, $P_S(Y|Z, H) = P_S(Y | Z) = P_T(Y | Z)$.
+This follows directly from super exogoneity of $Z$, $P_S(Y|Z, H) = P_S(Y | Z) = P_T(Y | Z)$.
 \end{proof}
 
 \framebreak
@@ -285,7 +285,7 @@ As $Z$ and $H$ encompass all variables and are thus the only possible changes ac
 \end{prop}
 
 \begin{proof}
-  Super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H|Z) dH = \int P_T(Y|Z,H)P_T(H|Z) dH = P_T(Y|Z)$.
+  Super exogoneity of $\{H \cup Z \}$ implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H|Z) dH = \int P_T(Y|Z,H)P_T(H|Z) dH = P_T(Y|Z)$.
 \end{proof}
 
 \framebreak
@@ -295,7 +295,7 @@ As $Z$ and $H$ encompass all variables and are thus the only possible changes ac
 \end{prop}
 
 \begin{proof}
-  Super exogoneity of $\{H \cup Z \}$, given they encompass all variables, implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H) dH = \int P_T(Y|Z,H)P_T(H) dH = P_T(Y|Z)$.
+  Super exogoneity of $\{H \cup Z \}$ implies $P_S(Y|Z,H) = P_T(Y|Z,H)$. Then $P_S(Y|Z) = \int P_S(Y|Z,H)P_S(H) dH = \int P_T(Y|Z,H)P_T(H) dH = P_T(Y|Z)$.
 \end{proof}
 
 ## Example - Microcredit[^microcredits]
@@ -319,6 +319,8 @@ As $Z$ and $H$ encompass all variables and are thus the only possible changes ac
 - Assume a set of proxies for Shumpeterianness, $Z_2$ - observables that are assumed to be _caused_ by $H$.
 
 - $Z_2$ does not directly affect outcome, all correlation through $H$.
+
+- $H$ super exogenous.
 
 ## Microcredit - threats to covariate shift
 
