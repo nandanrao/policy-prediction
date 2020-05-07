@@ -1,0 +1,93 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
+\addbibresource{bibs/external-validity.bib}
+\addbibresource{bibs/econ-causal-history.bib}
+\addbibresource{bibs/causality.bib}
+\addbibresource{bibs/domain-adaptation.bib}
+\addbibresource{bibs/economic-forests.bib}
+\addbibresource{bibs/microcredit.bib}
+\addbibresource{bibs/extra-citations.bib}
+\addbibresource{bibs/quantile-regression.bib}
+
+\usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
+
+% \usepackage[default,light,bold]{sourceserifpro}
+\usepackage[T1]{fontenc}
+
+\newtheorem{prop}{Proposition}
+
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, automata}
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\D}{\mathcal{D}}
+
+\DeclareMathOperator*{\om}{\mathbf{\omega}}
+\DeclareMathOperator*{\x}{\mathbf{x}}
+\DeclareMathOperator*{\z}{\mathbf{z}}
+
+
+
+\newcommand{\CI}{\mathrel{\perp\mspace{-10mu}\perp}}
+\newcommand{\nCI}{\centernot{\CI}}
+
+\title{ Predicting Treatment Effects in a New Context with Causal Transfer Trees }
+
+\author{Nandan Rao}
+
+
+\begin{document}
+
+Internally valid treatment effect studies cannot be used out-of-the-box to predict the effect of the treatment in a new context. Policymakers often, however, only have treatment effect data from other places and times and may wish to use this data to predict the effect of a policy in their own context.
+
+Assume there exists a conditional treatment distribution, $ P(\tau | \om) $, that is stable across time and space. $\om$ could consist of, for example, the parameters of the underlying data generating process. Although this $\om$ might exist, very often we both do not know what variables it consists of and/or cannot even measure those variables if we did know them.
+
+Thus, it is more helpful to ask questions about an alternative set of variables, $\x$, to which we do have access. We can also consider transforming $\x$ via a function $f(\cdot)$. By definition:
+
+$$
+P(\tau | f(\x) ) = \int P(\tau | f(\x), \z ) P( \z | f(\x)) \ d\z
+$$
+
+For some unobserved variables $\z$. We can consider the follow possibilities:
+
+\begin{enumerate}
+\item If $f(\x)$ directly recovered $\om$ (for instance, when $\om \subset \x$ and $f(\cdot)$ is a variable selection function), then $P(\tau | f(\x))$ would be invariant across time and space and could be used for prediction in any context after being observed in any other context. This characterizes the problem and technique described in \cite{Rojas-carulla2018}.
+
+\item If $f(\x) \subset \om$, then we can characterize $\z \coloneqq \om \setminus f(\x)$, and we know that $P(\tau | f(\x), \z )$ will be stable across all time and space and the stability of $P(\tau | f(\x) )$ is charactized by the stability of $P( \z | f(\x))$.
+
+\item If $f(\x) \cap \om \neq 0$, then we cannot easily say anything about $P(\tau | f(\x), \z )$. 
+
+% \item If more generically $f(\x)$ is a continuous latent representation of the data, we can consider $\z(\om)$ where $\z(\cdot)$ transforms $\om$ into a space orthogonal to $f(\x)$. If $f(\cdot)$ is a linear projection, $\z(\cdot)$ is the linear projection of $\om$ onto the subspace of $\om$ that is orthogonal to $f(\x)$.
+
+\item If more generally we consider $f(\x)$ to be a continuous latent representation of the data, we might want to characterize the relationship between $f(\x)$ and $\om$. 
+
+\end{enumerate}
+
+% Consider a potential model to predict a treatment effect based on two interacting covariates, $X_1, X_2$:
+
+% $$
+% P(\tau | X_1, X_2)
+% $$
+
+% This conditional distribution, like any distribution, has implicitly integrated over some unmeasured variable, which we will call $H$:
+
+% $$
+% P(\tau | X_1, X_2) = \int P(\tau | X_1, X_2, H) P(H | X_1, X_2) dH
+% $$
+
+% If $P(H | X_1, X_2)$ changes from the source context (where one has data on the treatment effect) to the target context (where one does not have data on the treatment effect), then $P(\tau | X_1, X_2)$ can make arbitrarily poor predictions. Thus, recovering information about the stability of the relationship $P(H | X_1, X_2)$ across contexts is vital for this prediction problem.
+
+% One can now consider this a model selection problem, picking between the models $P(\tau | X_1, X_2)$, $P(\tau | X_1)$, $P(\tau | X_2)$, $P(\tau)$. The model that describes the treatment effect best in one training context may or may not be the one that travels best.
+
+
+
+% I extend the Causal Trees framework (\cite{Athey2016}) to accept data from multiple contexts and introduce a regularization term that penalizes differences across source contexts in the dimension splitting process of the tree algorithm. The new algorithm is called Causal Transfer Trees (CTT). I compare two regularization candidates: the variance of the mean and the wasserstein distance of the conditional distribution (assuming rank preservation) as well as a mix of both. The algorithm also integrates importance estimation with regards to the predictive variables in the target domain.
+
+% I simulate data to reflect the problem where data contains a proxy of a latent cause whose functional relationship to the true cause changes from source domain to target domain (\cite{Pearl2014}). CTT does a significantly better job predicting the effects on the new target domain for which no training data exists. On the simulated data, compared to the Causal Trees baseline, CTT results in an average of 17\% lower MSE, positive as opposed to negative R squared, and confidence intervals which are significantly more accurate.
+
+
+
+
+
+\end{document}

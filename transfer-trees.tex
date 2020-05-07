@@ -1,0 +1,87 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
+\addbibresource{bibs/external-validity.bib}
+\addbibresource{bibs/econ-causal-history.bib}
+\addbibresource{bibs/causality.bib}
+\addbibresource{bibs/domain-adaptation.bib}
+\addbibresource{bibs/economic-forests.bib}
+\addbibresource{bibs/microcredit.bib}
+\addbibresource{bibs/extra-citations.bib}
+\addbibresource{bibs/quantile-regression.bib}
+
+\usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
+
+% \usepackage[default,light,bold]{sourceserifpro}
+\usepackage[T1]{fontenc}
+
+\newtheorem{prop}{Proposition}
+
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, automata}
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\D}{\mathcal{D}}
+
+
+\newcommand{\CI}{\mathrel{\perp\mspace{-10mu}\perp}}
+\newcommand{\nCI}{\centernot{\CI}}
+
+\title{ Predicting Treatment Effects in a New Context with Causal Transfer Trees }
+
+\author{Nandan Rao}
+
+
+\begin{document}
+
+
+\section{ Causal Transfer Trees }
+
+\newcommand{\TTs}{\hat{\tau}(x_i, \Pi, S(\mathcal{D}_S))}
+\newcommand{\TTt}{\hat{\tau}(x_i, \Pi, S(\mathcal{D}_T))}
+\newcommand{\TT}{\tau(X, \Pi)}
+\newcommand{\Ex}{\mathbb{E}}
+
+The goal is to create an estimator ($\hat{\tau}(x)$) of the true individual treatment effect ($\tau_i$) that minimizes some loss function in new prediction context, given labelled data in a different prediction context. We will consider the squared loss function:
+%
+$$
+\ell(\hat{\tau}, x_i, \tau_i) = (\tau_i - \hat{\tau}(x_i))^2
+$$
+%
+Which will be equivalent to the formulation of causal trees. We will similarly create discrete partitions in the feature space such that:
+%
+$$
+\mathcal{X} = \bigcup\limits_{i=1}^{P} \Pi_i
+$$
+%
+And define the following estimator:
+%
+$$
+\hat{\tau}(x, \Pi, S(\D)) =  \bar{y}^1_i - \bar{y}^0_i \ \ ; x \in \Pi_i\ ; \ i : x \in \Pi_i
+$$
+%
+Where $S(\cdot)$ consists of a sampling function to sample matched data $(y, x)$ from a domain $\D$. $\Pi$ consists of some particular partitioning of the feature space. As the sample mean is an unbiased estimate of the expectation, this is an unbiased estimate of $\tau(x,\Pi, \D) \coloneqq \mathbb{E}[\tau | X \in \Pi_i ]$. We would like to minimize our expected loss:
+%
+$$
+\Ex \ell(\Pi) = \Ex_{X, S} [ (\tau_i - \TTs^2  ]
+$$
+%
+Where our expectation is taken over all potentiall samples data in our source domain, $S(\D_S)$ and all the potential target data points, $X$. We can expand this loss function:
+%
+$$
+\Ex \ell(\Pi) = \underbrace{\Ex_{X} [ \tau_i^2]}_{\text{doesn't depend on $\Pi$}} - 2 \Ex_{X, S}[ \tau_i\TTs] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]]
+$$
+%
+We can expand the middle term with the law of iterated expectations and note that, conditional on the value being within a leaf, $\tau_i$ and $\TTs$ become independent:
+%
+\begin{align*}
+&-2 \Ex_{X,S}[ \underbrace{\Ex_{X}[ \tau_i | x_i \in \Pi_i]}_{= \tau(x_i, \Pi, \D_T)} \ \underbrace{\Ex_{S} [ \TTs | x_i \in \Pi_i]}_{= \tau(x_i, \Pi, \D_S)}] ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]]\\
+&-2 \Ex_{X}[ \tau(x_i, \Pi, \mathcal{D}_T)  \tau(x_i, \Pi, \mathcal{D}_S) ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]] \\
+&-2 \Ex_{X}[ \underbrace{(\tau(x_i, \Pi, \mathcal{D}_T) - \tau(x_i, \Pi, \mathcal{D}_S)}_{= \delta_{\tau}} + \tau(x_i, \Pi, \mathcal{D}_S)) \tau(x_i, \Pi, \mathcal{D}_S) ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]] \\
+&-2 \Ex_{X}[ \delta_{\tau} \tau(x_i, \Pi, \mathcal{D}_S) + \tau(x_i, \Pi, \mathcal{D}_S)^2 ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]] \\
+&-2 \Ex_{X}[ \Ex_{S_T}[\tau(x_i, \Pi, \mathcal{D}_{S_T}) - \tau(x_i, \Pi, \mathcal{D}_S)] \tau(x_i, \Pi, \mathcal{D}_S) + \tau(x_i, \Pi, \mathcal{D}_S)^2 ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]] \\
+&-2 \Ex_{X}[ \Ex_{S_T}[\tau(x_i, \Pi, \mathcal{D}_{S_T})\tau(x_i, \Pi, \mathcal{D}_S)] ] + \Ex_{X}[  \Ex_{S} [\TTs^2 ]]
+\end{align*}
+
+
+\end{document}
