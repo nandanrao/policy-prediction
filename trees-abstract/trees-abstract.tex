@@ -1,13 +1,13 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
-\addbibresource{bibs/external-validity.bib}
-\addbibresource{bibs/econ-causal-history.bib}
-\addbibresource{bibs/causality.bib}
-\addbibresource{bibs/domain-adaptation.bib}
-\addbibresource{bibs/economic-forests.bib}
-\addbibresource{bibs/microcredit.bib}
-\addbibresource{bibs/extra-citations.bib}
-\addbibresource{bibs/quantile-regression.bib}
+\addbibresource{../bibs/external-validity.bib}
+\addbibresource{../bibs/econ-causal-history.bib}
+\addbibresource{../bibs/causality.bib}
+\addbibresource{../bibs/domain-adaptation.bib}
+\addbibresource{../bibs/economic-forests.bib}
+\addbibresource{../bibs/microcredit.bib}
+\addbibresource{../bibs/extra-citations.bib}
+\addbibresource{../bibs/quantile-regression.bib}
 
 \usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
 
@@ -54,13 +54,13 @@ For some unobserved variables $\z$. We can consider the follow possibilities:
 \begin{enumerate}
 \item If $f(\x)$ directly recovered $\om$ (for instance, when $\om \subset \x$ and $f(\cdot)$ is a variable selection function), then $P(\tau | f(\x))$ would be invariant across time and space and could be used for prediction in any context after being observed in any other context. This characterizes the problem and technique described in \cite{Rojas-carulla2018}.
 
-\item If $f(\x) \subset \om$, then we can characterize $\z \coloneqq \om \setminus f(\x)$, and we know that $P(\tau | f(\x), \z )$ will be stable across all time and space and the stability of $P(\tau | f(\x) )$ is charactized by the stability of $P( \z | f(\x))$.
+\item If $f(\x) \subset \om$, then we can characterize $\z \coloneqq \om \setminus f(\x)$, and we know that $P(\tau | f(\x), \z )$ will be stable across all time and space and our measured function, $P(\tau | f(\x) )$, will be stable across the time and space over which $P( \z | f(\x))$ is stable.
 
-\item If $f(\x) \cap \om \neq 0$, then we cannot easily say anything about $P(\tau | f(\x), \z )$. 
+\item If $\om$ consists entirely of latent variables (as often must be the case in any social science problem where the prediction consists of an individuals choice whose ``true'' causal factors must be said to lie deep in their minds), then by definition $\x \cap \om \neq 0$. Thus, $f(\cdot)$ should not be considered a variable selection problem, but rather a latent variable recovery problem. In this case, if $f(\x) \subset \om$ we have the previous scenario.
 
 % \item If more generically $f(\x)$ is a continuous latent representation of the data, we can consider $\z(\om)$ where $\z(\cdot)$ transforms $\om$ into a space orthogonal to $f(\x)$. If $f(\cdot)$ is a linear projection, $\z(\cdot)$ is the linear projection of $\om$ onto the subspace of $\om$ that is orthogonal to $f(\x)$.
 
-\item If more generally we consider $f(\x)$ to be a continuous latent representation of the data, we might want to characterize the relationship between $f(\x)$ and $\om$. 
+% \item If more generally we consider $f(\x)$ to be a continuous latent representation of the data, we might want to characterize the relationship between $f(\x)$ and $\om$.
 
 \end{enumerate}
 

@@ -1,0 +1,159 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
+\addbibresource{../bibs/external-validity.bib}
+\addbibresource{../bibs/econ-causal-history.bib}
+\addbibresource{../bibs/causality.bib}
+\addbibresource{../bibs/domain-adaptation.bib}
+\addbibresource{../bibs/economic-forests.bib}
+\addbibresource{../bibs/microcredit.bib}
+\addbibresource{../bibs/extra-citations.bib}
+\addbibresource{../bibs/quantile-regression.bib}
+\addbibresource{../bibs/cash-transfers.bib}
+
+\usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
+
+\usepackage[default,light,bold]{sourceserifpro}
+\usepackage[T1]{fontenc}
+
+\newtheorem{prop}{Proposition}
+
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, automata}
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\D}{\mathcal{D}}
+
+
+
+\newcommand{\CI}{\mathrel{\perp\mspace{-10mu}\perp}}
+\newcommand{\nCI}{\centernot{\CI}}
+
+\title{ Annual Report }
+\author{ Nandan Rao }
+
+
+\begin{document}
+
+\maketitle
+
+\section { Research Objective }
+
+Applied economics research is most often ``applied'' to policy making. In the literature on experimental and quasi-experimental econometrics, however, there are few formal frameworks that use the results of experimental studies to predict the effects of policies in new contexts. This research agenda lays out a plan to fill this gap using recent ideas from econometrics and machine learning. I will also explain the existence of the gap from a historical perspective and review the current methods that do exist to motivate the research I am proposing.
+
+Randomized control trials (RCTs), or natural experiments that replicate them, have become the official gold standard of empirical work in economics and many related fields. More and more, policy makers are encouraged to look to RCTs to make ``evidence-based'' policy decisions (\cite{Manski2013, Cartwright2013}).
+
+Many prominent economists have expressed a concern that RCTs and their quasi-experimental colleagues (i.e. natural experiments, instrumental variables, regression discontinuity, etc.) are particularly difficult to generalize to new contexts due to their overarching concern for internal validity, often at the expense of external validity (\cite{Heckman1995, Heckman2008, Deaton2010, Manski2013, Deaton2018}).
+
+Making evidence-based policy decisions is an act of generalizing from previous studies to decisions about the future. Charles Manski \parencite*{Manski2013} voices the concern that experimental studies have tended to ``be silent'' on the question of external validity and that ``from the perspective of policy choice \ldots What matters is the informativeness of a study for policy making, which depends jointly on internal and external validity.''
+
+This silence on external validity means that, despite the huge field of research and techniques for ensuring causal identification (internal validity) via experimental or quasi-experimental methods, very little has been done to either A) create tools to prove that the same results will apply generally in all contexts or B) create tools to predict the results in a specific context, given proven results from one or more experiments.
+
+Abhijit Banjerjee himself \parencite*{Snowberg2016}, a large proponent of RCTs, has recently echoed the current lack of and need for more formal systems for the generalization of experimental studies, stating ``it is our belief that creating a rigorous framework for external validity is an important step in completing an ecosystem for social science field experiments, and a complement to many other aspects of experimentation.''
+
+In response to such theoretical concerns, a small but growing literature  has sprung up around empirically proving that results from prominent RCT or other causally identified studies do not easily extrapolate to new contexts (\cite{Pritchett2016, Allcott2015, Bisbee2017, Rosenzweig2019}). These results emphasize a need for powerful extrapolation tools if policy makers are realistically expected to make decisions based on ``evidence.''
+
+Predicting the results of a policy in a new location is, tautologically, a prediction problem. Machine learning is a field which has been very successful at formalizing prediction problems. Domain adaptation, a subfield of machine learning, formalizes the problem of moving from one (or more) domains with labelled data to a new domain where only unlaballed data is available (\cite[for a survey, see][]{Pan2010}).
+
+Formulating the problem of policy prediction in terms of domain adaptation provides a rigorous way to think about the assumptions that may or may not hold, as well as a rich (if short) history of techniques that have been used to solve the problems associated with those assumptions. I will show how policy prediction can be formulated as a covariate shift problem and propose that the associated assumptions could be tested empirically in a treatment effects framework.
+
+This research proposal will take the following form. First I will lay out the high-level aims, research question, and deliverables. Following that, I will provide the basic theoretical background necessary to prove that my research agenda is feasible. I will then provide an outline of the three articles that will make up each chapter of my thesis. Finally, I will provide a timeline that covers the next 2 years of the project.
+
+\clearpage
+
+\section { Academic Achievements and Activities }
+
+In this academic year, my main research-related achievements were:
+
+\begin{itemize}
+\item \textbf{Submitted a research plan that was approved.} This is my first year of the PhD and I registered in December of 2019. I put together a research plan that consisted of (3) potential articles and a timeline and got it approved in March, 2020.
+
+\item \textbf{My paper ``Treatment Transfer Trees'' was accepted to EcoMod 2020 in Milan.} The conference was cancelled due to Coronavirus, but the abstract is still included in their book of abstracts and the paper published in EconPapers on repec.org.
+
+\item \textbf{I presented at the conference \textit{Textual Analysis Workshop} by the Centre for Behavioural and Experimental Social Science at the University of East Anglia.} I presented a paper in which I am co-author, titled ``Letting Text Speak to Economic Data.'' 
+
+\item \textbf{A paper I was a co-author on, ``Identifying and measuring developments in artificial intelligence,'' was published in the OECD Library.} This was a paper I worked on during an internship at the OECD and it was published.
+\end{itemize}
+
+Other miscelaneous academic activities included: 
+
+\begin{itemize}
+\item Supervised 2 MSc. Data Science Theses projects at Barcelona Graduate School of Economics (BGSE).
+\item Taught in the following classes at the MSc. Data Science masters at BGSE: Text Mining for the Social Sciences (8 hours, joint with with Hannes Mueller and Ruben Durante), Economic Methods for Data Science (10 hours, joint with Caterina Calsamiglia and Antonio Penta), Data Warehousing and Business Intelligence (16 hours, I was the course coordinator), and the Computing brushups. 
+\end{itemize}
+
+Finally, I participated in the following seminars during the year: 
+
+\begin{itemize}
+\item Seminars at the department of Applied Economics at UAB.
+\item Statistics seminar at BGSE.
+\item Online Causal Inference seminar (https://sites.google.com/view/ocis/home).
+\end{itemize}
+
+
+\section { Updated Schedule }
+
+
+\textbf{Q3 2020}
+
+\begin{itemize}
+\item (Chapter 1 \& 2) Test models and understand performance on simple real world data (microcredit) and write up new versions of model to perform better.
+\item (Chapter 2) Create new simulation dataset that exemplies a new aspect of the problem seen in the real world data.
+\item Identify potential research stay and research group that might help the development of the project.
+\end{itemize}
+
+
+\textbf{Q4 2020}
+
+\begin{itemize}
+\item Identify (2) extensions of the model(s) that could be researched by BGSE master’s students for theses in 2021.
+\item (Chapter 1 \& 2) Submit chapters as an article to a reasonable econometric journal.
+\item Present current work at 1-2 conferences.
+\end{itemize}
+
+\textbf{Q1 2021}
+
+\begin{itemize}
+\item (Chapter 3) Review newly available studies and data from 2020 for inclusion.
+\item (Chapter 3) Gather data and create combined dataset from the chosen studies.
+\item (Chapter 1 \& 2) Potential research stay with research group that will be helpful to develop third generation of the technique.
+\end{itemize}
+
+\textbf{Q2 2021}
+
+\begin{itemize}
+\item (Chapter 3) Clean and check all the data from the cash transfer studies.
+\item (Chapter 3) Apply tree model to cash transfer studies and document results.
+\item (Chapter 1 \& 2) Present technique(s) at 3-4 small-to-midsized conferences.
+\item (Chapter 1 \& 2) Prepare, document, and advertise Python package(s). Create Stata extension(s).
+\end{itemize}
+
+\textbf{Q3 2021}
+
+\begin{itemize}
+\item (Chapter 3) Submit results to 1-2 small conferences
+\item (Chapter 1 \& 2) Present technique(s) at 1-2 major conferences.
+\item (Chapter 1 \& 2) Re-submit article(s) to 2nd choice journal(s).
+\end{itemize}
+
+\textbf{Q4 2021}
+
+\begin{itemize}
+\item (Chapter 3) Finish article on empirical results and submit to first-choice applied economics journal.
+\item Submit thesis.
+\end{itemize}
+
+
+\subsection*{International Research Stay}
+
+As outlined in the schedule, I aim to participate in an international research stay during or around Q1/Q2 of 2021. These are the following universities and research groups I am currently considering, in order of preference:
+
+\begin{enumerate}
+\item University of Copenhagen. Jonas Peters. Copenhagen Causality Lab.
+\item ETH Zurich. Nicolai Meinshausen.
+\item Max Planck Institute for Intelligent Systems. Bernhard Schölkopf. Department of Empirical Inference.
+\end{enumerate}
+
+
+
+\end{document}

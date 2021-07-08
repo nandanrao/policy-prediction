@@ -618,3 +618,99 @@ Engles puts this into a probabilistic formulation.
 Why this is useful to economics (carwright's example of opportunidades -- other examples from the ``support factors'' paper from research class).
 
 Thus, the domain-adaptation framework and the invariant-to-change formulation together formalize a long-standing problem in economics that is currently a large gap, the effect of which produces real problems for policy prediction.
+
+
+* OM
+
+** Session 1
+
+
+- Introduce trees properly, fix notation, etc.
+- Give specific parts of books + articles
+- Graphical models need an introduction
+- Don't mention Do Calculus just to say you dont use it - put it in discussion
+
+- WHAT IS THE MAIN SPECIFIC THING you have done??? "in this article I do..."
+
+- Make very clear how you are modeling P(X) in the target context.
+
+- Section 4 very difficult to follow
+
+- By formulating things in theorum/statement -> proof, you then understand why I should care.
+
+How to formulate this as a proof?
+
+First proof -> general is impossible
+Second proof -> assumption about contexts allows a formulation.
+Third statement -> using leave-one-out is necessary
+
+
+- Start with section5, then we know what the problem is!
+
+- Make first 2 pages of the articles readable by ANYONE. Very accesible.
+Readable by anyone who knows anything about statistics
+
+- Only define what is essential. Do not clog the paper with little related things.
+
+
+- Better description of causal trees, setup the notation with causal trees!!
+
+- By page 3, be talking about what you are doing.
+
+This implies that, when describing causal trees, already say what you GOING to do.
+
+
+** Stats Lit Review
+
+
+*** Rojas-Carulla / Heinz-Deml
+
+
+
+*** Epidemiology Zone
+
+In general, exchangeability needed. Large part devoted to "generalizability" to the population from which the sample was taken, thinking of participation, etc.
+
+Formal handling of one-sided noncompliance a big plus.
+
+Summed up well by the Chen Chen Yu paper:
+
+1. Most involve some sort of IPW to reweight.
+2. Some involve "outcome modeling" - like Rudolph 2017, missing Dahabreh 2020, and Yang 2019
+
+
+Yang 2019 is the data-fusion paper, well written - nice overview
+
+**** Issa Dahabreh
+
+- 2020 paper in Statistics in Medicine
+
+  + Proves results for nested and non-nested designs.
+
+  + Non-nested just needs covariates for a true random sample from population (my interest)
+
+
+**** Kara Rudolph
+
+- 2017 paper with van der Laan
+
+  + WALK THROUGH THE TMLE for ITTATE -- for inspiration - study a bit TMLE!
+  + Assume E0(Y | S = 0, W, A, Z) = E0(Y | S = 1, W, A, Z) (exchangeability)
+  + Explicitly handle encouragement-design (one-sided noncompliance)
+  + EIF and TML everything
+  + More-or-less potential outcomes
+
+- 2020 with Ivan Diaz
+
+  + Same assumption (exchangeability) as other paper
+  + SCM setup
+  + Focus on indirect effects and mediators
+  + Also EIF and TML
+
+
+**** Missing!!
+
+- Generalizing from unrepresentative experiments: a stratified propensity score approach
+Colm O'Muircheartaigh  Larry V. Hedges 2014
+
+- Dahabreh et al 2020!!

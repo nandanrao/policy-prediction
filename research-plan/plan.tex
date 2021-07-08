@@ -1,14 +1,14 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage[backend=biber, citestyle=authoryear, bibencoding=utf8]{biblatex}
-\addbibresource{bibs/external-validity.bib}
-\addbibresource{bibs/econ-causal-history.bib}
-\addbibresource{bibs/causality.bib}
-\addbibresource{bibs/domain-adaptation.bib}
-\addbibresource{bibs/economic-forests.bib}
-\addbibresource{bibs/microcredit.bib}
-\addbibresource{bibs/extra-citations.bib}
-\addbibresource{bibs/quantile-regression.bib}
-\addbibresource{bibs/cash-transfers.bib}
+\addbibresource{../bibs/external-validity.bib}
+\addbibresource{../bibs/econ-causal-history.bib}
+\addbibresource{../bibs/causality.bib}
+\addbibresource{../bibs/domain-adaptation.bib}
+\addbibresource{../bibs/economic-forests.bib}
+\addbibresource{../bibs/microcredit.bib}
+\addbibresource{../bibs/extra-citations.bib}
+\addbibresource{../bibs/quantile-regression.bib}
+\addbibresource{../bibs/cash-transfers.bib}
 
 \usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
 
@@ -490,7 +490,7 @@ I am interested in predicting the treatment effect $\tau_i$ for a \textit{target
 
 \subsection{ Literature Review }
 
-A host of recent empirical studies seek to empirically test the external validity of prominent RCT studies by examining the predictive power of the coefficients learned from one or more studies. 
+A host of recent empirical studies seek to empirically test the external validity of prominent RCT studies by examining the predictive power of the coefficients learned from one or more studies.
 
 Pritchett and Sandefur \parencite*{Pritchett2016} consider the situation where one has experimental evidence from a source context ($\D_S$), but in the target context ($\D_T$) one only has observational evidence for which the selection into treatment is not random. They consider the traditional bias variance decomposition of mean squared error and consider that the observational model:
 %
@@ -498,17 +498,17 @@ $$
 MSE = var(\hat{\beta^{obs}_T}) + (\hat{\beta^{obs}_T} - \hat{\beta^{exp}_T})^2
 $$
 %
-Where the bias comes from the difference between the marginal distribution of the treatment effect $P(\tau)$ and the distribution of the treatment effect on the treated $P(\tau | W = 1)$ which are potentially very different due to the fact that treatment was not experimentally or randomly assigned in any way and is assumed to be dependent on the potential outcomes themselves. They compare this to the decomposition of the experimental model from a different context: 
+Where the bias comes from the difference between the marginal distribution of the treatment effect $P(\tau)$ and the distribution of the treatment effect on the treated $P(\tau | W = 1)$ which are potentially very different due to the fact that treatment was not experimentally or randomly assigned in any way and is assumed to be dependent on the potential outcomes themselves. They compare this to the decomposition of the experimental model from a different context:
 %
 $$
 MSE = var(\hat{\beta^{exp}_S}) + (\hat{\beta^{exp}_S} - \hat{\beta^{exp}_T})^2
 $$
 %
-Where the bias comes from the fact that the ATE in a particular context might be arbitrarily different from that of another context. Recall from section \ref{unobservables} that this will happen whenever the true process has heterogeneous treatment effects that interact with a latent variable $H$ and $P(H | X)$ changes from context to context (where $X$ are observed variables whose interactive effects are included in the model). 
+Where the bias comes from the fact that the ATE in a particular context might be arbitrarily different from that of another context. Recall from section \ref{unobservables} that this will happen whenever the true process has heterogeneous treatment effects that interact with a latent variable $H$ and $P(H | X)$ changes from context to context (where $X$ are observed variables whose interactive effects are included in the model).
 
-Pritchett and Sandefur compare the two models on the six microcredit experiments summarized in \cite{Banerjee2015a}. They find that in both their tested outcomes, the observational estimate beat the experimental estimate from another context when estimated on a single study. For one outcome it beat the experimental estimate from pooled contexts, and in one outcome it was (mildly) beaten. From this study it is easy to see that the transfer bias, indeed the transfer problem itself, is far from trivial and can make prediction very difficult, even with the most carefully identified studies. 
+Pritchett and Sandefur compare the two models on the six microcredit experiments summarized in \cite{Banerjee2015a}. They find that in both their tested outcomes, the observational estimate beat the experimental estimate from another context when estimated on a single study. For one outcome it beat the experimental estimate from pooled contexts, and in one outcome it was (mildly) beaten. From this study it is easy to see that the transfer bias, indeed the transfer problem itself, is far from trivial and can make prediction very difficult, even with the most carefully identified studies.
 
-Bisbee et al \parencite*{Bisbee2017} perform a similar study but to test the external validity not of OLS estimates but of 2-Stage Least Squares estimates. LATE estimates have historically recieved criticism for their local nature and lack of external validity (\cite{Deaton2010}) which has led to a series of defenses from proponents of IV methodologies (\cite{Imbens2009}). Indeed, there is also a formalization for reweighting LATE estimates (\cite{Angrist2011}) which corresponds directly to importance estimation in the tranfer learning context (\cite{Suigyama2007}) and sample selection correction from econometrics (\cite{Manski1977}). Bisbee et al empirically test the external validity of a LATE estimator of the effect of fertility on the labor supply. They perform a horse race similar to that in Pritchett and Sandefer \parencite*{Pritchett2016} between observational coefficients in the target domain and ``unbiased'' coefficients (provided by 2-stage least squares) from a source domain. Their data consists of country/year labor market and fertility data and they show that when moving from one random country/year pair to another, the LATE estimate is systematically worse than an observational estimate performed in that context. When pooling all data from all other countries and all years of the target country and reweighting according to observable macro variables, however, the LATE estimate performs similarly (but not better) to the observational estimate. 
+Bisbee et al \parencite*{Bisbee2017} perform a similar study but to test the external validity not of OLS estimates but of 2-Stage Least Squares estimates. LATE estimates have historically recieved criticism for their local nature and lack of external validity (\cite{Deaton2010}) which has led to a series of defenses from proponents of IV methodologies (\cite{Imbens2009}). Indeed, there is also a formalization for reweighting LATE estimates (\cite{Angrist2011}) which corresponds directly to importance estimation in the tranfer learning context (\cite{Suigyama2007}) and sample selection correction from econometrics (\cite{Manski1977}). Bisbee et al empirically test the external validity of a LATE estimator of the effect of fertility on the labor supply. They perform a horse race similar to that in Pritchett and Sandefer \parencite*{Pritchett2016} between observational coefficients in the target domain and ``unbiased'' coefficients (provided by 2-stage least squares) from a source domain. Their data consists of country/year labor market and fertility data and they show that when moving from one random country/year pair to another, the LATE estimate is systematically worse than an observational estimate performed in that context. When pooling all data from all other countries and all years of the target country and reweighting according to observable macro variables, however, the LATE estimate performs similarly (but not better) to the observational estimate.
 
 These findings are thus qualitatively similar for our discussion: the extrapolation across contexts can introduce a bias that is as large and often larger than the selection bias introduced by observational data whose causal identification is confounded.
 
@@ -520,12 +520,12 @@ This work proposes a technique that extends the work of Peters \parencite*{Peter
 
 There have been a few papers in the economics literature that empirically test the performance of OLS treatment effect models on out-of-sample prediction in a new domain, as references previously (\cite{Pritchett2016, Rosenzweig2019}). This work extends that literature by proposing a new technique that seeks to solve the problem which works even when observational results are not available in the target domain (a la \cite{Pritchett2016}) or the changes in context are not known a prior and thus cannot be built into a structural model (a la \cite{Rosenzweig2019}).
 
-The contribution of the proposed technique can also be considered in the line of sample adjustment, beginning in the 1970s in econometrics (\cite{Manski1977}) and continuing with the reweighted-LATE (\cite{Angrist2011}). While those techniques adjust for observable characteristics via a process akin to importance estimation, as does the proposed technique, they do not adjust for or attempt to detect changes in latent variable distributions, as the proposed technique does. 
+The contribution of the proposed technique can also be considered in the line of sample adjustment, beginning in the 1970s in econometrics (\cite{Manski1977}) and continuing with the reweighted-LATE (\cite{Angrist2011}). While those techniques adjust for observable characteristics via a process akin to importance estimation, as does the proposed technique, they do not adjust for or attempt to detect changes in latent variable distributions, as the proposed technique does.
 
 
 \subsection{ Theoretical Framework }
 
-The goal is to create an estimator ($\hat{\tau}(x)$) of the true individual treatment effect ($\tau_i$) that minimizes some loss function in new prediction context, given labelled data in a different prediction context. 
+The goal is to create an estimator ($\hat{\tau}(x)$) of the true individual treatment effect ($\tau_i$) that minimizes some loss function in new prediction context, given labelled data in a different prediction context.
 
 We assume that there exists an individual (heterogeneous) treatment effect that is a linear function of covariates, such that $\tau_i = \beta x_i$ and the observed outcome for a given individual consists of:
 %
@@ -551,7 +551,7 @@ $$
 \Ex \ell(\Pi) = \Ex_{X, S} [ (\tau_i - \TTs^2  ]
 $$
 %
-Where our expectation is taken over all potentiall samples data in our source domain, $S(\D_S)$ and all the potential target data points, $X$. This chapter will propose a sample estimate of this loss function and empirically test its results. 
+Where our expectation is taken over all potentiall samples data in our source domain, $S(\D_S)$ and all the potential target data points, $X$. This chapter will propose a sample estimate of this loss function and empirically test its results.
 
 \subsection{ Simulated Data }
 
@@ -820,7 +820,7 @@ Studies (experiments) on UCT programs can be classified broadly into two groups:
 
 It is telling that, in a recent symposium they organized on UBI, the Annual Review of Economics published two entirely separate reports: one on the US and ``advanced'' countries, another on the ``developing world'' (\cite{Hoynes2019, Banerjee2019}). Which is to say, when reviewing the evidence and discussing potential policies related to UBI, they saw it beneficial to consider the two contexts and separate problems entirely, implying that what one learns in one most likely has very little to do with the other.
 
-Despite that, many proponents of UBI will cite UCT studies from low- and middle-income countries as evidence that ``people act in their own interest when given free cash'' (\cite{van2017basic}). From a definitional perspective, UBI is unequivocally a form a unconditional cash transfer. It has other defining characteristics, some of which are not entirely agreed upon (\cite{Hoynes2019}), but Banerjee et al \parencite*{Banerjee2019} lays out several dimensions on which the majority of UBI proposals differ from the majority of UCT experiments in low- and middle-income countries: 
+Despite that, many proponents of UBI will cite UCT studies from low- and middle-income countries as evidence that ``people act in their own interest when given free cash'' (\cite{van2017basic}). From a definitional perspective, UBI is unequivocally a form a unconditional cash transfer. It has other defining characteristics, some of which are not entirely agreed upon (\cite{Hoynes2019}), but Banerjee et al \parencite*{Banerjee2019} lays out several dimensions on which the majority of UBI proposals differ from the majority of UCT experiments in low- and middle-income countries:
 
 \begin{enumerate}
 \item Universality. Very few studies (of any kind, including those that explicitly study basic income) can, by their very nature, test a truly universal basic income. The universality of the program can lead to effects on labor markets that small trials cannot hope to explore. One recent study (\cite{Egger2019}) seeks to explore the general equilibrium effects of cash transfers, which is an important step in the direction of understanding the effects of universality, however they still only tested the effect of giving cash to a small set of families (their novelty is in the measurement of the effects that goes beyond those families).
@@ -832,7 +832,7 @@ Additionally, universality is often different from UCT programs in low- and midd
 
 For my purposes, universality and duration are not features we can easily test without further structure. For the purposes of this study, therefore, I consider UBI experiments to be UCT experiments that may or may not offer a different amount of purchasing power and that, most interestingly, take place in a different context.
 
-Despite the fact that many of the interesting societal effects of a UBI program cannot be tested, there is a narrower effect on the individual level, that one could potentially imagine fulfills the stable unit treatment value assumption: the effect that receiving extra cash has on ones desire to participate in a (fixed) labor market. 
+Despite the fact that many of the interesting societal effects of a UBI program cannot be tested, there is a narrower effect on the individual level, that one could potentially imagine fulfills the stable unit treatment value assumption: the effect that receiving extra cash has on ones desire to participate in a (fixed) labor market.
 
 This is a major policy outcome concern for unconditional cash transfers (\cite{Hoynes2019}). Specifically, will labor supply decrease if cash transfers provide a source of income other than labor? Most studies of UCT programs record labor market participation for this reason.
 
@@ -1047,7 +1047,7 @@ While there is no current study of these particular cash transfer projects on wh
 
 \section{International Research Stay}
 
-As outlined in the schedule, I aim to participate in an international research stay during or around Q1/Q2 of 2021. These are the following universities and research groups I am currently considering, in order of preference: 
+As outlined in the schedule, I aim to participate in an international research stay during or around Q1/Q2 of 2021. These are the following universities and research groups I am currently considering, in order of preference:
 
 \begin{enumerate}
 \item University of Copenhagen. Jonas Peters. Copenhagen Causality Lab.
