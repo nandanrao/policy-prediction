@@ -7,9 +7,7 @@ math: false
 <!-- _class: lead -->
 
 Nandan Rao
-Supervisor: Caterina Calsamiglia
-Tutor: Francesc Trillas
-2020
+2021
 
 ---
 
@@ -60,9 +58,9 @@ Now what do you do?
 
 Qualitative methods (Shadish, Cook, Campbell 2001; Cartwright and Hardy 2013).
 
-Bayesian hiearchical quantile effects (Meager 2018).
+Meta-study methods, specifically Bayesian hiearchical methods (Meager 2018).
 
-**Lacking**: a method that is quantitative and integrates covariates in the prediction context.
+Transportability of treatment effects (Dahabreh et al. 2020).
 
 ---
 
@@ -225,11 +223,7 @@ Where $\tau_i, x_i \in d^*$.
 
 **Proposition 1**
 
-The expected oracle loss of a partitioning, $\mathbb{E} \ell(\Pi)$, is estimable given the following assumptions:
-
-1. $\{d_1,\dots,d_K \} \in \mathcal{D}, d^* \in \mathcal{D}$.
-
-2. $K \geq 2$
+The expected oracle loss of a partitioning, $\mathbb{E} \ell(\Pi)$, is estimable given access to $\hat{\tau}(x_i, \Pi, S(d^*))$.
 
 ---
 
@@ -284,6 +278,19 @@ $$
 
 ---
 
+## Estimable function
+
+Which leads to the loss function, estimable with access to $\hat{\tau}(x_i, \Pi, S(d^*)$:
+$$
+\newcommand{\TTs}{\hat{\tau}(x_i, \Pi, S(d))}
+\newcommand{\Var}{\mathbb{V}}
+\sum_j \hat{P}(x_i \in \Pi_j) \bigg( -2 \hat{\tau}(x_i, \Pi, S(d^*)) \TTs  + \hat{\Var}_{S} [\TTs] + \TTs ^2 \bigg)
+$$
+
+Unforunately, no way to compute $\hat{\tau}(x_i, \Pi, S(d^*)$ without further assumptions.
+
+---
+
 ## Pooled estimator
 
 Pooled prediction: $\frac{1}{K} \sum_k \hat{\tau}(x_i, \Pi, S(d_k)$
@@ -294,8 +301,10 @@ $$
 \newcommand{\Ex}{\mathbb{E}}
 \newcommand{\TTsi}{\hat{\tau}(x_i, \Pi, S(d_k))}
 \newcommand{\Var}{\mathbb{V}}
-\sum_{j} P(x_i \in \Pi_j) \bigg[ -2   \min_{k \in \{1,\dots,P \}}  \bigg( \hat{\tau}(\Pi_j, S(d_k)) \frac{1}{P - 1} \sum_{m \neq k}^P \hat{\tau}(\Pi_j, S(d_m)) \bigg) \ + \\ \frac{1}{K^2} \sum_k \hat{\Var}_{S} [\TTsi] + \bigg[ \frac{1}{K} \sum_k \TTsi \bigg]^2 \bigg]
+\sum_{j} P(x_i \in \Pi_j) \bigg[ -2  \frac{1}{K} \sum^K_k \bigg( \hat{\tau}(\Pi_j, S(d_k)) \frac{1}{P - 1} \sum_{m \neq k}^P \hat{\tau}(\Pi_j, S(d_m)) \bigg) \ + \\ \frac{1}{K^2} \sum_k \hat{\Var}_{S} [\TTsi] + \bigg[ \frac{1}{K} \sum_k \TTsi \bigg]^2 \bigg]
 $$
+
+Aggressive variant: swap $\frac{1}{K} \sum^K_k$ for $\min_{k \in \{1,\dots,P \}}$
 
 ---
 
@@ -328,55 +337,12 @@ Where $\bar{\tau}_{\{d_1,\dots,d_K \}}$ is the oracle average treatment effect o
 ---
 
 
-## Results - UP (K=4)
+## Results: K=4 ($R^2$)
 
-
-| measure      | model | linear | nl-hard | nl-simple | nl-stacked |
-|--------------|-------|--------|---------|-----------|------------|
-| r2t-0.1      | CT    | -1.07  | -0.63   | -0.28     | -1.07      |
-| r2t-0.1      | TTT-M | -0.45  | -0.04   | 0.14      | -0.19      |
-| r2t-0.5      | CT    | -0.02  | 0.08    | 0.33      | -0.02      |
-| r2t-0.5      | TTT-M | 0.13   | 0.16    | 0.43      | 0.10       |
-| CI-coverage  | CT    | 0.17   | 0.23    | 0.16      | 0.18       |
-| CI-coverage  | TTT-M | 0.82   | 0.91    | 0.93      | 0.86       |
-
+![width:1150px](../tex/png/results-4-r2.png)
 
 ---
 
-## Results - FS (K=4)
+## Results: K=4 (Details)
 
-
-| measure      | model | linear | nl-hard | nl-simple | nl-stacked |
-|--------------|-------|--------|---------|-----------|------------|
-| r2t-0.1      | CT    | 0.49   | 0.42    | 0.48      | 0.40       |
-| r2t-0.1      | TTT-M | 0.43   | 0.37    | 0.46      | 0.24       |
-| r2t-0.5      | CT    | 0.52   | 0.45    | 0.51      | 0.44       |
-| r2t-0.5      | TTT-M | 0.48   | 0.41    | 0.49      | 0.33       |
-| CI-coverage  | CT    | 0.76   | 0.75    | 0.72      | 0.74       |
-| CI-coverage  | TTT-M | 1.00   | 1.00    | 1.00      | 1.00       |
-
----
-
-
-## Results - UP (K=3)
-| measure     | model | linear | nl-hard | nl-simple | nl-stacked |
-|-------------|-------|--------|---------|-----------|------------|
-| r2t-0.1     | CT    | -1.47  | -0.70   | -0.25     | -1.05      |
-| r2t-0.1     | TTT-M | -1.03  | -0.35   | 0.09      | -0.49      |
-| r2t-0.5     | CT    | -0.10  | 0.06    | 0.29      | -0.03      |
-| r2t-0.5     | TTT-M | 0.10   | 0.15    | 0.43      | 0.08       |
-| CI-coverage | CT    | 0.17   | 0.23    | 0.18      | 0.17       |
-| CI-coverage | TTT-M | 0.73   | 0.87    | 0.87      | 0.76       |
-
----
-
-## Results - UP (K=2)
-
-| measure     | model | linear | nl-hard | nl-simple | nl-stacked |
-|-------------|-------|--------|---------|-----------|------------|
-| r2t-0.1     | CT    | -1.90  | -1.15   | -0.53     | -1.66      |
-| r2t-0.1     | TTT-M | -1.53  | -0.88   | -0.30     | -1.30      |
-| r2t-0.5     | CT    | -0.26  | -0.00   | 0.20      | -0.25      |
-| r2t-0.5     | TTT-M | 0.01   | 0.10    | 0.32      | -0.02      |
-| CI-coverage | CT    | 0.12   | 0.20    | 0.17      | 0.13       |
-| CI-coverage | TTT-M | 0.58   | 0.77    | 0.73      | 0.58       |
+![width:1150px](../tex/png/results-4-rest.png)

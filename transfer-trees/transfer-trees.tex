@@ -9,6 +9,7 @@
 \addbibresource{../bibs/extra-citations.bib}
 \addbibresource{../bibs/quantile-regression.bib}
 \addbibresource{../bibs/cash-transfers.bib}
+\addbibresource{../bibs/transportability.bib}
 
 \usepackage{amsmath, amsthm, amsfonts, mathtools, csquotes, bm, centernot, bbm}
 \usepackage{multirow}
@@ -85,6 +86,8 @@ This article extends both the algorithm and the theory of Causal Trees (\cite{At
 \section{Prior Art}
 
 Causal Trees (\cite{Athey2016}) extend the basic Classification and Regression Tree (CART) algorithm in two ways: A) they formulate a version of trees to be used with treatment effect data and B) they provide a sample splitting method (``honest estimation'') that provides unbiased estimates and, therefore, accurate confidence intervals through variance prediction of the mean. More than simply extending decision trees, Causal Trees provided the treatment effect community a disciplined way to deal with the multiple testing problem in heterogeneous effect estimation. The insight comes from understanding that the multiple testing problem for coefficient inference is a direct reflection of the overfitting problem for prediction. Thus, the techniques used to prevent predictive overfitting by CART can, in turn, be used to prevent the multiple testing problem in a posterior heterogeneous effect discovery.
+
+% Dahebra et al. and transportability literature!
 
 \cite{Pearl2014} provide a characterization of ``transportability,'' the license to transfer causal effects to a new domain. They show that transportability conditions, given a known causal graph, can be determined by applying some simple do-calculus rules. The conditions return the set of conditional distributions that must be stable across domains in order for the causal effect to transfer.
 
